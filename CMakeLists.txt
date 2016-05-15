@@ -8,7 +8,7 @@ add_executable(test3 main.cpp model3.cpp sdnsim.cpp attacker.cpp)
 set(CMAKE_BUILD_TYPE Release)
 SET( CMAKE_CXX_COMPILER="g++")
 SET(CMAKE_CXX_FLAGS "-O3")
-SET( CMAKE_CXX_FLAGS  "-fopenmp ${CMAKE_CXX_FLAGS} -std=gnu++11")
+SET( CMAKE_CXX_FLAGS  "-ftree-parallelize-loops=8 -fopenmp -fopenmp ${CMAKE_CXX_FLAGS} -std=gnu++11")
         ## Optimize
   #  set(CMAKE_EXE_LINKER_FLAGS "-s")  ## Strip binary
 

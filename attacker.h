@@ -26,5 +26,5 @@ public:
         
 };
 StateType num2StateAttack(int num, int flowNum,int qNum);
-std::set<int> num2SetAttack(int num, int flowNum,int qNum);
+std::set<int> bin2SetAttack(int num, int flowNum,int qNum);
 #endif

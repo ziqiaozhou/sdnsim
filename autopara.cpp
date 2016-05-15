@@ -27,8 +27,8 @@ void Automatic::paraGenerate(int flowNum,int ruleNum,double alpha,double TTLMax)
        // flowRuleTable.resize(flowNum,ruleNum);
     retry:
         flag = 1;
-        for(int i = 1;i<=nFlow;i++){
-            for (int j=1; j<=nRule; j++) {
+        for(int i = 1;i<=nFlow;++i){
+            for (int j=1; j<=nRule; ++j) {
                 srand(time(NULL));
                 if (rand() < belta)
                     flowRuleTable->get(i,j)=j;
@@ -40,7 +40,7 @@ void Automatic::paraGenerate(int flowNum,int ruleNum,double alpha,double TTLMax)
             }
             flowPara->get(i) = rand();
         }
-        for (int j=0;j<ruleNum;j++){
+        for (int j=0;j<ruleNum;++j){
             if(flowRuleTable->block(0,j,nFlow,1).sum()==0){
                 flag=0;
                 goto retry;
@@ -48,29 +48,29 @@ void Automatic::paraGenerate(int flowNum,int ruleNum,double alpha,double TTLMax)
         }
         vector<array<int,2>> oldSeq(nRule);
         memset(oldSeq.data(),0,nRule*sizeof(int)*2);
-        for (int i=1; i<=nRule; i++) {
+        for (int i=1; i<=nRule; ++i) {
             oldSeq[i][1]=i;
-            for(int j = 1;j<=nFlow;j++){
+            for(int j = 1;j<=nFlow;++j){
                 if (flowRuleTable->get(j, i) > 0)
                     oldSeq[i][0]+=1;
             }
         }
         vector<array<int,2>> newSeq=oldSeq;
         sort(newSeq.begin(),newSeq.end(),rulePrioSorter);
-        for (int i=1; i<=nRule; i++) {
+        for (int i=1; i<=nRule; ++i) {
             newSeq[i][1] =i;
         }
          sort(newSeq.begin(),newSeq.end(),rulePrioSorter);
-        for (int i=1; i<=nRule; i++) {
-            for(int j = 1;j<=nFlow;j++){
+        for (int i=1; i<=nRule; ++i) {
+            for(int j = 1;j<=nFlow;++j){
                 if (flowRuleTable->get(j,i) > 0)
                     flowRuleTable->get(j,i) = newSeq[ruleNum - i][1];
             }
         }
-         for(int j = 1;j<=nFlow;j++){
+         for(int j = 1;j<=nFlow;++j){
             int  matchNum = 0;
             int maxRule = 0;
-             for (int i=1; i<=nRule; i++){
+             for (int i=1; i<=nRule; ++i){
                  
              }
          }
@@ -94,7 +94,7 @@ void Automatic::automatic(){
     double limit = 0.001;
     double interval = 1.5;
     int maxm = 10000;
-    for(int i=0;i<100;i++){
+    for(int i=0;i<100;++i){
         paraGenerate(flowNum, ruleNum, alpha, TTLMax);
     }
 }

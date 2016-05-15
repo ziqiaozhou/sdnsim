@@ -126,10 +126,10 @@ class TCounter{
         realsize=t.realsize;
         return t;
     };*/
-    inline void reset(){
+    inline void reset()   {
          memset(counter,0,realsize);
     }
-   inline  T & get(int rule){
+   inline  T & get(int rule)  {
         return counter[rule-1];
     }
     int size(){
@@ -145,7 +145,7 @@ class TCounter{
 
     ~TCounter(){
       //  std:://cout<<"free"<<counter<<std::endl;
-        free(counter);
+      //  free(counter);
     }
 };
 
@@ -228,32 +228,32 @@ class FlowRuleTable: public Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>{
    //     realsize=(ruleNum)*(flowNum);
 
        // counter=(unsigned int **)malloc(ruleNum*sizeof(void*));
-      /*  for(int i=0;i<ruleNum;i++){
+      /*  for(int i=0;i<ruleNum;++i){
                 counter[i]=(unsigned int *)malloc(flowNum*sizeof(unsigned int));
                 memset(counter[i],0,flowNum*sizeof(unsigned int));
         }*/
     }
      ~FlowRuleTable(){
-        for(int i=0;i<ruleNum;i++){
+        for(int i=0;i<ruleNum;++i){
                 //std:://cout<<"free"<<i<<"ADDRESS="<<counter[i]<<std::endl;
                //free(counter[i]);
         }
         //std:://cout<<"free"<<std::endl;
         //free(counter);
     }
-    inline int& get(int flow,int rule){
+    inline int& get(int flow,int rule)  {
        return (*this)(flow-1,rule-1);
     }
-    inline int get_rulenum(){
+    inline int get_rulenum()  {
        return ruleNum;
     }
-    inline int get_flownum(){
+    inline int get_flownum()  {
        return flowNum;
     }
-    inline int get_high_rule(int flow){
+    inline int get_high_rule(int flow)  {
         int rule=0;
         int prio=0;
-        for(int i=1;i<=ruleNum;i++){
+        for(int i=1;i<=ruleNum;++i){
             if(get(flow,i)>prio){
                 rule=i;
                 prio=get(flow,i);
@@ -261,7 +261,7 @@ class FlowRuleTable: public Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>{
         }
         return rule;
     }
-    inline void set(int flow,int rule,int value){
+    inline void set(int flow,int rule,int value)  {
         (*this)(flow-1,rule-1)=value;
     }
 
@@ -291,7 +291,7 @@ struct SeqFlowSorter{
 };
 
 template <class T>
-inline void maxmValueFind(std::list<T> all,T & maxm, typename std::list<T>::iterator& position){
+inline void maxmValueFind(std::list<T> all,T & maxm, typename std::list<T>::iterator& position)  {
     maxm=-1;
     if (!all.empty())
     {
@@ -307,7 +307,7 @@ inline void maxmValueFind(std::list<T> all,T & maxm, typename std::list<T>::iter
     }
 };
 template <class T>
-inline T distance(std::list<T> vec1, std::list<T>vec2){
+inline T distance(std::list<T> vec1, std::list<T>vec2)  {
     int l_1 = vec1.size();
     int l_2 = vec2.size();
     T dist=0;
@@ -316,7 +316,7 @@ inline T distance(std::list<T> vec1, std::list<T>vec2){
     else{
         typename std::list<T>::iterator it1;
         typename std::list<T>::iterator it2;
-        for(int i=0;i<l_1;i++){
+        for(int i=0;i<l_1;++i){
             ++it1;
             ++it2;
             dist = dist + abs((*it1) - (*it2));
@@ -325,7 +325,7 @@ inline T distance(std::list<T> vec1, std::list<T>vec2){
     return dist;
 };
 template <class T>
- inline void minmValueFind(std::list<T> &all,T &minm, typename std::list<T>::iterator &position){
+ inline void minmValueFind(std::list<T> &all,T &minm, typename std::list<T>::iterator &position)  {
     minm=-1;
     position=all.end();
     if (!all.empty())
@@ -342,27 +342,17 @@ template <class T>
     }
 };
 template <class T>
-inline bool ifContain(T element, std::list<T> all){
+inline bool ifContain(T element, std::list<T> all)  {
 // determine whether the list contains a specific rule
     return std::find(all.begin(), all.end(), element) != all.end();
 };
-template <class T>
-void probNormalization(T * midStateProb,int size)
-{
-    T sum=0;
-    for(int i=0;i<size;i++)
-        sum+=midStateProb[i];
-    if(sum==1)
-        return;
-    for(int i=0;i<size;i++){
-        midStateProb[i]/=sum;
-    }
 
-}
 //bool ifInTrans(int prev,int now, TransProb& mat,TransProb::iterator &it);
-void combineSeq(std::list<SeqFlow>& seqflow,std::list<double> seq2,int flow);
-int ceilM(double TTL,double unit,double delta);
-
+//void combineSeq(std::list<SeqFlow>& seqflow,std::list<double> seq2,int flow);
+inline int ceilM(double TTL,double unit,double delta)  
+{
+    return ceil(TTL/unit);
+}
 class model{
     public:
     StateProb2 stateProb;
@@ -381,12 +371,34 @@ class model{
     TransProb Trans;
     std::deque<StateType>legalState;
     StateType stateNum;
+    
     int get_nrule(){
         return nRule;
     }
-    StateType cacheLRU(int flow, StateType  oldList,int match_pos);
+    inline StateType cacheLRU(int flow, StateType  oldList,int match_pos)  
+    {
+        StateType newList=0;
+        if(flow==0){
+            newList=oldList;
+            return newList;
+        }
+        if (match_pos)
+        {
+            //  int newRule = match_pos;
+            newList=oldList;//clear_bit(oldList,match_pos);
+        }
+        else
+        {
+            int newRule=flowRuleTable->get_high_rule(flow);
+            newList=set_bit(oldList,newRule);
+        }
+        //    if(newList.size()>mSize)
+        //      cerr<<"over cache size in cacheLRU()"<<endl;
+        return newList;
+    }
+
     
-    bool __attribute__((always_inline)) isLegalState(StateType stateNum){
+    inline bool  isLegalState(StateType stateNum)  {
         if((stateNum>>mSize)==0)
             return true;
         int count=0;
@@ -398,22 +410,18 @@ class model{
         }
         return true;
     }
-    StateType __attribute__((always_inline)) clear_bit(StateType u,int b){
-        StateType t=(1<<(b-1));
-        t=~t;
-        return u&t;
+    inline StateType  clear_bit(StateType u,int b)  {
+        return u&(~(1<<(b-1)));
     };
-    StateType __attribute__((always_inline)) set_bit(StateType u,int b){
-        StateType t=(1<<(b-1));
-        return u|t;
+    inline StateType set_bit(StateType u,int b)   {
+        //StateType t=(1<<(b-1));
+        return u|(1<<(b-1));
     };
-    inline bool __attribute__((always_inline)) exist_bit(StateType u,int b){
-        if (b==0)
-            return false;
-        return (u&(1<<(b-1)))>0;
+    inline bool exist_bit(StateType u,int b)  {
+        return (u&(1<<(b-1)));
     }
     double ruleEVT(int rule, StateType list,bool full);
-    inline int __attribute__((always_inline)) nonZeroNum(StateType stateNum)
+    inline int  nonZeroNum(StateType stateNum)  
     {
         int count=0;
         while(stateNum){
@@ -423,7 +431,7 @@ class model{
         return count;
     };
     //void matMultiply(TransProb& mat, StateProb2& oldprob);
-    inline bool __attribute__((always_inline)) nolessbit(unsigned long state,int n){
+    inline bool nolessbit(unsigned long state,int n)  {
         int count=0;
         if ((state>>(n-1))==0) {
             return false;
@@ -456,7 +464,7 @@ class model{
          delta=delta0;
          nRule=flowRuleTable->get_rulenum();
          nFlow=flowRuleTable->get_flownum();
-           fn = ceilM(interval, unit, delta);
+        fn = ceilM(interval, unit, delta);
                              
 
     };
@@ -478,30 +486,30 @@ class model{
 //int next_valid_rule(unsigned long &oldState,unsigned long &numState);
 #define forAllRinS(ruleNo,numState0) StateType numState=numState0;for(ruleNo=next_valid_rule(numState,numState);numState>0;ruleNo+=next_valid_rule(numState>>=1,numState))
 
-inline StateType  nChoosek(int n, int k){
+inline StateType  nChoosek(int n, int k)  {
     if (k == 0)
         return 1;
     return (StateType)(n * nChoosek(n - 1, k - 1)) / k;
 
 }
-inline StateType factorial(int x)
+ static inline StateType factorial(int x)
 {
     return (x <=1?1:x*factorial(x-1));
 };
-inline StateType factorial(int x,int y)
+ static inline StateType factorial(int x,int y)
 {
     if(y>=x)
         return 1;
     return (x<=y?1:x*factorial(x-1,y));
 };
-inline int next_valid_rule(StateType oldState0,StateType &numState){
+inline int next_valid_rule(StateType oldState,StateType &numState)  {
     int ruleNo=1;
-    StateType oldState=oldState0;
+   // StateType oldState=oldState0;
     if(oldState==0){
         numState=oldState;
         return -1;
     }
-    while((oldState&1)==0){
+    while(!(oldState&1)){
         if (oldState==0) {
             return 0;
         }
@@ -517,7 +525,7 @@ Counter list2Counter(LISTINT all,int ruleNum);
 
 int nonZeroNum(LISTINT state);
 //int  num2bin(StateType stateNumber, int ruleNumber,BoolState * state,int& nonZeroNum);
-double poissonNumber(double lambda, int number,double interval);
+//double poissonNumber(double lambda, int number,double interval);
 //void cacheLRU(int flow, LISTINT& oldList,LISTINT& newList, int mSize, FlowRuleTable* flowRuleTable,LISTINT::iterator& match_pos);
 //double triggerFlowP(floatCounter& flowPara,int rule,FlowRuleTable* flowRuleTable, LISTINT& state,BoolState & bool_state);
 //double ruleEVT(int rule, LISTINT list,BoolState &bool_list,FlowRuleTable* flowRuleTable,
@@ -527,4 +535,16 @@ double poissonNumber(double lambda, int number,double interval);
 //double TTLProb(int rule, LISTINT state,BoolState & bool_state,FlowRuleTable* flowRuleTable,
             //  floatCounter & TTL,int mSize,floatCounter& flowPara,double unit,double interval,double delta);
 double unitComputation(floatCounter *flowPara,double delta,double limit, floatCounter *TTL);
+inline double poissonNumber(double lambda, int number,double interval)  
+{
+    return (exp(-lambda*interval)*pow(lambda*interval,number)/factorial(number));
+};
+inline double poissonNumber0(double lambda, int number,double interval)  
+{
+    return (exp(-lambda*interval));
+};
+inline double poissonNumber1(double lambda, int number,double interval)  
+{
+    return (exp(-lambda*interval)*lambda*interval);
+};
 #endif // SDNSIM_H

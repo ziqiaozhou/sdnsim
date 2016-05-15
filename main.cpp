@@ -7,7 +7,8 @@
 #include <set>
 #include <vector>
 #include<cmath>
-StateType clear_bit(StateType u,int b){
+#include<bitset>
+/*StateType clear_bit(StateType u,int b){
     StateType t=(1<<(b-1));
     t=~t;
     return u&t;
@@ -15,7 +16,7 @@ StateType clear_bit(StateType u,int b){
 StateType set_bit(StateType u,int b){
     StateType t=(1<<(b-1));
     return u|t;
-};
+};*/
 
 #define entropy(pr) ((pr<=0)||(pr>=1))?0:(-pr*log(pr)-(1-pr)*log(1-pr))
 using namespace std;
@@ -84,14 +85,14 @@ int main()
     //flowPara[4]=0.2;
     floatCounter TTL(ruleNum);
 
-    for(int i=4;i<=ruleNum;i++){
+    for(int i=4;i<=ruleNum;++i){
         table.set(i,i,1);
         
     }
-    for(int i=1;i<=ruleNum;i++){
+    for(int i=1;i<=ruleNum;++i){
         TTL[i]=1;
     }
-    for(int i=4;i<=flowNum;i++)
+    for(int i=4;i<=flowNum;++i)
         flowPara[i]=0.4;
     //table.set(3,1,1);*/
     /*
@@ -105,7 +106,7 @@ int main()
    // flowPara<<0.3,0.8,0.5;
     
       /*
-    for(int i=4;i<=flowNum;i++)
+    for(int i=4;i<=flowNum;++i)
         flowPara[i]=0.4;*/
     cout<<table;
     ////cout<<"table"<<endl;
@@ -118,7 +119,7 @@ int main()
   //  //cout<<"high prio"<<flowRuleTable->get_high_rule(1);
   //  cout<<"init TTl"<<endl;
        //TTL<<1,1,1;
- /*  for(int i=1;i<=ruleNum;i++){
+ /*  for(int i=1;i<=ruleNum;++i){
         TTL[i]=1;
     }*/
   //   cout<<"init TTl"<<endl;
@@ -154,8 +155,8 @@ int main()
     }
     cout<<"choose end"<<endl;
     
-  /*  for(int i=0;i<PrXQ->size();i++){
-        for(int j=0;j<(*PrXQ)[i].size();j++){
+  /*  for(int i=0;i<PrXQ->size();++i){
+        for(int j=0;j<(*PrXQ)[i].size();++j){
             cout<<i<<","<<j<<"="<<(*PrXQ)[i][j]<<endl;
         }
     }*/
@@ -166,22 +167,22 @@ int main()
     cout<<(factorial(13)/factorial(12))<<endl;
     cout<<"flownum="<<attacker.flowRuleTable->get_flownum()<<endl;
     cout<<"flownum="<<attacker.queryNum<<endl;
-    cout<<"prob state="<<endl;
-    cout<<stateprob;
+   // cout<<"prob state="<<endl;
+   // cout<<stateprob;
     // int stateid=0;
-       for(int i=0;i<IG->size();i++){
-        set<int> set=num2SetAttack(i,flowNum,1);
+       for(int i=0;i<IG->size();++i){
+      /*  set<int> set=bin2SetAttack(i,flowNum,1);
         for(auto & one: set){
         cout<<one<<endl;
-        }
+        }*/
         cout<<"gain="<<(*IG)[i]<<endl;;
     }
-    for(int i=0;i<PrXQ->size();i++){
-        for(int j=0;j<(*PrXQ)[i].size();j++)
+  /*  for(int i=0;i<PrXQ->size();++i){
+        for(int j=0;j<(*PrXQ)[i].size();++j)
             cout<<(*PrXQ)[i][j]<<" ";
         cout<<endl;
-    }
-  /* for(int i=0;i<attacker.stateNum;i++){
+    }*/
+  /* for(int i=0;i<attacker.stateNum;++i){
         cout<<i<<attacker.legalState[i]<<endl;
     }*/
     free(PrXQ);
