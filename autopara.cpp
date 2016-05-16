@@ -210,8 +210,9 @@ void Automatic::paraGenerate(int nFlow0, int nRule0, double alpha, float TTLMax,
 void Automatic::save(string path){
     times++;
     ofstream myfile;
-    myfile.open(path+"/para"+to_string(times)+".txt");
-    myfile<<(*flowRuleTable);
+   
+             myfile.open(path+"/"+to_string(nFlow)+"_"+to_string(nRule)+"para"+to_string(times)+".txt");
+               myfile<<(*flowRuleTable);
     myfile<<endl;
     for(int i=0;i<nRule;i++)
         myfile<<TTL->get(i)<<"\t";
@@ -250,14 +251,14 @@ int Automatic::generate(){
     int maxm = 10000;
     for(int i=0;i<100;++i){
         paraGenerate(nFlow, nRule, alpha, TTLMax,*flowRuleTable,*flowPara, *TTL,flowInterest);
-        cout<<*flowRuleTable<<endl;
+     /*   cout<<*flowRuleTable<<endl;
         for(int i=0;i<nRule;i++)
             cout<<(*TTL)[i+1]<<" ";
         cout<<endl;
         for(int i=0;i<nFlow;i++){
             cout<<(*flowPara)[i+1]<<" ";
         }
-        cout<<flowInterest<<endl;
+        cout<<flowInterest<<endl;*/
         target=flowInterest;
         attackFlow.empty();
         updated=true;
@@ -274,7 +275,7 @@ int Automatic::generate(){
             }
         }
         if(record_case)
-            save("/Users/ziqiaozhou/GoogleDrive/sdncode/database");
+            save("../data/");
         
     }
     
