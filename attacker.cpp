@@ -85,7 +85,7 @@ double Attacker::flowProbCompute3M(StateProb2& stateProb0,set<int>& queryInteres
     return queryProb;
 }
 
-void Attacker::conditionalEntropyComputeM3(int flowInterest,int initialStateNum,vector<double>&conditionalEntropyQ,vector<vector<double>>&PrXQ){
+void Attacker::conditionalEntropyComputeM3(int flowInterest,int initialStateNum,VecD &conditionalEntropyQ,MatD&PrXQ){
     int valueNum = pow(2,qNum);
     //  double ** PrQ=(double **)malloc(sizeof(double *)*queryNum);
     //for(int i=0;i<valueNum;++i){
@@ -106,15 +106,17 @@ void Attacker::conditionalEntropyComputeM3(int flowInterest,int initialStateNum,
          TransA =transComputation(flowInterest) ;
     else
          TransA = transComputation_ignore(flowInterest);*/
-    if(Trans.size()==0)
+    if(updated){
         transComputation() ;
+        updated=false;
+    }
     cout<<"trans complete\n";
     TransA=transComputation_ignore(flowInterest);
     
-   cout<<Trans<<endl;
-    cout<<TransA<<endl;
+  // cout<<Trans<<endl;
+   // cout<<TransA<<endl;
 
-    cout<<Trans.nonZeros()<<endl;
+   // cout<<Trans.nonZeros()<<endl;
     
     cout<<"trans A complete\n";
     cout<<TransA.nonZeros()<<endl;
@@ -124,21 +126,24 @@ void Attacker::conditionalEntropyComputeM3(int flowInterest,int initialStateNum,
     }
     cout<<"multiply\n";
     double PrQ;
+    conditionalEntropyQ.setZero();
     #pragma omp parallel for
     for (StateType i=0;i<queryNum;++i){
         set<int> state=bin2SetAttack(i,nFlow,qNum);
         for(int j=0;j<valueNum;++j){
             double PrQ=flowProbCompute3M(stateProbI, state, j);
-            if (PrQ > 0.0000000000000001){
-                PrXQ[i][j]=flowProbCompute3M(stateProbA, state, j)/PrQ;
-                conditionalEntropyQ[i]+=(PrQ*entropy(PrXQ[i][j]));
+            if (PrQ > 0){
+                PrXQ(i,j)=flowProbCompute3M(stateProbA, state, j)/PrQ;
+                conditionalEntropyQ(i)+=(PrQ*entropy(PrXQ(i,j)));
             }
         }
     }
     stateProb=stateProbI;
 }
 
-void Attacker::run(int qNum0,int flowInterest,StateType initialStateNum,set<int>&attackFlow, vector<vector<double>>*&PrXQ,vector<double>*&IG){
+void Attacker::run(int qNum0,int flowInterest,StateType initialStateNum,set<int>&attackFlow, MatD &PrXQ,VecD &IG){
+    init();
+    updated=true;
     cout<<"run1";
     double pr = pow((1 - flowProb[flowInterest]), fn);
     for (int i=0;i<nFlow+1; ++i) {
@@ -152,26 +157,29 @@ void Attacker::run(int qNum0,int flowInterest,StateType initialStateNum,set<int>
     queryNum=((qNum > 0) && (flowNum >= qNum))?(factorial(flowNum,flowNum - qNum)):0;
    
     int valueNum = 1<<qNum;
-    vector<double> conditionalEntropyQ(queryNum,0);//=(double *)zmalloc(sizeof(double)*queryNum);
-    PrXQ=new vector<vector<double>>(queryNum,vector<double>(valueNum,0));
-    IG=new vector<double>(queryNum,0);
-    
-    conditionalEntropyComputeM3(flowInterest, initialStateNum,conditionalEntropyQ,(*PrXQ));
-     #pragma omp parallel for
-    for(int i=0;i<queryNum;++i){
-         (*IG)[i]=(entropyQ - conditionalEntropyQ[i]);
-    }
+    VecD conditionalEntropyQ(queryNum);//=(double *)zmalloc(sizeof(double)*queryNum);
+    conditionalEntropyQ.setZero();
+    PrXQ.resize(queryNum, valueNum);
+    IG.resize(queryNum);
+    IG.setOnes();
+    conditionalEntropyComputeM3(flowInterest, initialStateNum,conditionalEntropyQ,PrXQ);
+    IG=entropyQ*IG-conditionalEntropyQ;
+       //IG.maxCoeff(&query,&tmp);
     for (int i = 0;i<queryNum;++i){
-        if ( (*IG)[i] > maxm  ){
-            maxm = (*IG)[i];
+        if ( IG(i) > maxm  ){
+            maxm = IG(i);
             attackFlow = bin2SetAttack(i, flowNum, qNum);
         }
-        if(abs((*IG)[i] - maxm) <0.0000000001){
+        if(abs(IG(i) - maxm) <0.0000000001){
             set<int> attackFlowMid = bin2SetAttack(i, flowNum, qNum);
             if(attackFlowMid.count(flowInterest)){
                 attackFlow = attackFlowMid;
-                maxm = (*IG)[i];
+                maxm = IG(i);
             }
         }
     }
+    for(std::set<int>::iterator it=attackFlow.begin(); it!=attackFlow.end(); ++it){
+        cout<<"choose"<<*it<<endl;
+    }
+    cout<<"choose end"<<endl;
 }

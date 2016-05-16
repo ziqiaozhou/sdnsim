@@ -8,6 +8,7 @@
 #include <vector>
 #include<cmath>
 #include<bitset>
+#include "autopara.h"
 /*StateType clear_bit(StateType u,int b){
     StateType t=(1<<(b-1));
     t=~t;
@@ -147,17 +148,14 @@ int main()
     StateType l=1023;
 #endif
     set<int>attackFlow;
-    vector<vector<double>>*PrXQ=NULL;
-    vector<double>*IG=NULL;
+   MatD PrXQ;
+    VecD IG;
     Attacker attacker(&flowPara,flowRuleTable,&TTL,mSize,initialStateNum,interval,unit,delta);
     cout<<"attack"<<endl;
     cout<<"run1"<<endl;
     attacker.run(qnum,target,initialStateNum,attackFlow,PrXQ,IG);
-    for(std::set<int>::iterator it=attackFlow.begin(); it!=attackFlow.end(); ++it){
-        cout<<"choose"<<*it<<endl;
-    }
-    cout<<"choose end"<<endl;
-    
+    cout<<IG<<endl;
+    cout<<PrXQ<<endl;
   /*  for(int i=0;i<PrXQ->size();++i){
         for(int j=0;j<(*PrXQ)[i].size();++j){
             cout<<i<<","<<j<<"="<<(*PrXQ)[i][j]<<endl;
@@ -173,24 +171,27 @@ int main()
    // cout<<"prob state="<<endl;
    // cout<<stateprob;
     // int stateid=0;
-       for(int i=0;i<IG->size();++i){
-      /*  set<int> set=bin2SetAttack(i,flowNum,1);
-        for(auto & one: set){
-        cout<<one<<endl;
-        }*/
-        cout<<"gain="<<(*IG)[i]<<endl;;
-    }
-    for(int i=0;i<PrXQ->size();++i){
-        for(int j=0;j<(*PrXQ)[i].size();++j)
-            cout<<(*PrXQ)[i][j]<<" ";
-        cout<<endl;
-    }
-  /* for(int i=0;i<attacker.stateNum;++i){
+      /* for(int i=0;i<attacker.stateNum;++i){
         cout<<i<<attacker.legalState[i]<<endl;
     }*/
-    free(PrXQ);
-    free(IG);
+   
+    Automatic a(&flowPara,flowRuleTable,&TTL,mSize,initialStateNum,interval,unit,delta);
+
+    int interestflow=a.generate();
+   /*
     cout<<attacker.total_time<<endl;
+    vector<double> lambdas(ruleNum);
+    StateType newList=5;
+    for(int i=1; i<=ruleNum; ++i)
+    {
+        bool existi=exist_bit(newList,i);
+        double lambda0 =attacker.triggerFlowP(i,newList,existi);// triggerFlowP(flowPara, i, flowRuleTable, state,bool_state);
+        lambdas[i-1]=lambda0;
+       
+    }
+    
+    cout<<"ceil"<<ceilM(1, unit, delta)<<endl;
+    cout<<attacker.TTLStateProb(5,lambdas);*/
     // //cout<<"triger flowp"<<triggerFlowP(flowPara, 2, flowRuleTable, oldList,bool_oldList);
     ////cout<<"maxv=ceilM(TTL[rule], unit, delta)"<<ceilM(TTL[1], unit, delta)<<endl;
     return 0;

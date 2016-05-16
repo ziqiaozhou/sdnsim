@@ -39,15 +39,27 @@ class model3:public model{
         fullNum=(stateNum-baseFullState);
         return stateNum;
     }
+    double TTLStateProb( StateType state,std::vector<double> lambdas);
     void init_triggerFlowP();
     double TTLProb_reuse(int rule, StateType state);
     double epsilon;
     model3(floatCounter * flowPara, FlowRuleTable *flowRuleTable, floatCounter * TTL, int mSize, int initialStateNum, double interval, double unit, double delta):model(flowPara,flowRuleTable,TTL,mSize,initialStateNum,interval,unit,delta){
         //StateType i,j=1;
+        
+    };
+    StateType bin2Num(StateType state);
+    void flowState(int flow, StateType oldStateNum,StateProb2& newStateProb);
+    void transComputation();
+    TransProb transComputation_ignore(int);
+    TransProb transComputation(int ignored_flow);
+    double ruleEVT_reuse(int rule, StateType stateNum);
+    void run();
+    void init(){
+        unit=unitComputation(flowPara, delta, limit, TTL);
         stateNum=0;
         total_time=0;
         std::cout<<"init model3"<<std::endl;
-
+        fn = ceilM(interval, unit, delta);
         //#pragma omp parallel for
         StateType all=1<<nRule;
         stateNum=stateNumCompute(mSize,nRule);
@@ -63,23 +75,14 @@ class model3:public model{
         //epsilon=1/(2*stateNum);
         epsilon=0;
         initFlowProb();
-       // maxTrans=nChoosek(nRule, nRule/2);
-       // maxTrans
-        
+        // maxTrans=nChoosek(nRule, nRule/2);
+        // maxTrans
         ttlProbTable.resize(stateNum,nRule);
         ttlProbTable.reserve(ttlPNum);
         ttlProbTable.setZero();
         init_triggerFlowP();
         std::cout<<"maxTrans"<<maxTrans<<std::endl;
-        
     };
-    StateType bin2Num(StateType state);
-    void flowState(int flow, StateType oldStateNum,StateProb2& newStateProb);
-    void transComputation();
-    TransProb transComputation_ignore(int);
-    TransProb transComputation(int ignored_flow);
-    double ruleEVT_reuse(int rule, StateType stateNum);
-    void run();
     StateProb2& getStateProb(){
         return stateProb;
     }
