@@ -138,7 +138,7 @@ int main()
     model3 model(&flowPara,flowRuleTable,&TTL,mSize,initialStateNum,interval,unit,delta);
     //cout<<"end"<<endl;
 
-   model.run();
+   //model.run();
     //cout<<"end"<<endl;
     StateProb2 stateprob=model.getStateProb();
    // int stateid=0;
@@ -150,6 +150,7 @@ int main()
     set<int>attackFlow;
    MatD PrXQ;
     VecD IG;
+#if 1
     Attacker attacker(&flowPara,flowRuleTable,&TTL,mSize,initialStateNum,interval,unit,delta);
     cout<<"attack"<<endl;
     cout<<"run1"<<endl;
@@ -174,7 +175,7 @@ int main()
       /* for(int i=0;i<attacker.stateNum;++i){
         cout<<i<<attacker.legalState[i]<<endl;
     }*/
-   
+#endif
     Automatic a(&flowPara,flowRuleTable,&TTL,mSize,initialStateNum,interval,unit,delta);
 
     int interestflow=a.generate();

@@ -54,7 +54,7 @@ void sortM(FlowRuleTable *oldMat)
 };
 
 RulePrioSorter rulePrioSorter;
-void Automatic::paraGenerate(int nFlow0, int nRule0, double alpha, float TTLMax, FlowRuleTable & table, floatCounter & flowPara, floatCounter & TTL, int & flowInterest){
+int Automatic::paraGenerate(int nFlow0, int nRule0, double alpha, float TTLMax, FlowRuleTable & table, floatCounter & flowPara, floatCounter & TTL, int & flowInterest){
     
     int flag = 0;
     int matchNum, maxRule, flag2;
@@ -72,6 +72,7 @@ void Automatic::paraGenerate(int nFlow0, int nRule0, double alpha, float TTLMax,
     
     while (flag == 0)
     {
+    retry:
         table.setZero();
         for(int i=1; i<=nFlow; ++i)
         {
@@ -91,6 +92,7 @@ void Automatic::paraGenerate(int nFlow0, int nRule0, double alpha, float TTLMax,
             if (table.col(j-1).sum() == 0)
             {
                 flag = 0;
+                goto retry;
                 continue;
             }
         }
@@ -99,6 +101,7 @@ void Automatic::paraGenerate(int nFlow0, int nRule0, double alpha, float TTLMax,
             if (table.row(j-1).sum() == 0)
             {
                 flag = 0;
+                 goto retry;
                 continue;
             }
         }
@@ -182,11 +185,13 @@ void Automatic::paraGenerate(int nFlow0, int nRule0, double alpha, float TTLMax,
         if (posLen == 0)
         {
             flag = 0;
+             goto retry;
             // cout<<"len==0"<<endl;
             //cout<<table<<endl;
         }
         //cout<<"rubn"<<endl;
     }
+    *flowRuleTable=table;
     // cout<<"rubn"<<endl;
     int rd = ceil(distDouble(generator) * posLen);
     flowInterest = posSet.get(1,rd);
@@ -202,6 +207,7 @@ void Automatic::paraGenerate(int nFlow0, int nRule0, double alpha, float TTLMax,
     {
         mSize = 1;
     }
+    return flowInterest;
     // cout<<"rubn finish"<<endl;
     
 }
@@ -250,7 +256,8 @@ int Automatic::generate(){
     //  double interval = 1.5;
     int maxm = 10000;
     for(int i=0;i<100;++i){
-        paraGenerate(nFlow, nRule, alpha, TTLMax,*flowRuleTable,*flowPara, *TTL,flowInterest);
+        int tmp=paraGenerate(nFlow, nRule, alpha, TTLMax,*flowRuleTable,*flowPara, *TTL,flowInterest);
+        cout<<"generated"<<endl;
      /*   cout<<*flowRuleTable<<endl;
         for(int i=0;i<nRule;i++)
             cout<<(*TTL)[i+1]<<" ";

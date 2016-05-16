@@ -24,7 +24,7 @@ public:
      Automatic(floatCounter * flowPara, FlowRuleTable *flowRuleTable, floatCounter * TTL, int mSize, int initialStateNum, double interval, double unit, double delta):Attacker(flowPara,flowRuleTable,TTL,mSize,initialStateNum,interval,unit,delta){
          times=0;
     };
-    void paraGenerate(int flowNum, int ruleNum, double alpha, float TTLMax, FlowRuleTable & table, floatCounter & flowPara, floatCounter & TTL, int & flowInterest);
+    int paraGenerate(int flowNum, int ruleNum, double alpha, float TTLMax, FlowRuleTable & table, floatCounter & flowPara, floatCounter & TTL, int & flowInterest);
     int generate();
     void save(std::string path);
 };

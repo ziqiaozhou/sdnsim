@@ -106,13 +106,14 @@ void Attacker::conditionalEntropyComputeM3(int flowInterest,int initialStateNum,
          TransA =transComputation(flowInterest) ;
     else
          TransA = transComputation_ignore(flowInterest);*/
-    if(updated){
+    /*if(updated){
         transComputation() ;
         updated=false;
     }
     cout<<"trans complete\n";
     TransA=transComputation_ignore(flowInterest);
-    
+    */
+    TransA=transComputation(flowInterest);
   // cout<<Trans<<endl;
    // cout<<TransA<<endl;
 
@@ -146,9 +147,9 @@ void Attacker::run(int qNum0,int flowInterest,StateType initialStateNum,set<int>
     updated=true;
     cout<<"run1";
     double pr = pow((1 - flowProb[flowInterest]), fn);
-    for (int i=0;i<nFlow+1; ++i) {
+   /* for (int i=0;i<nFlow+1; ++i) {
         cout<<"flowprob="<<flowProb[i]<<endl;
-    }
+    }*/
     double entropyQ = entropy(pr);
     double maxm = 0;
     qNum=qNum0;
@@ -178,8 +179,8 @@ void Attacker::run(int qNum0,int flowInterest,StateType initialStateNum,set<int>
             }
         }
     }
-    for(std::set<int>::iterator it=attackFlow.begin(); it!=attackFlow.end(); ++it){
+    /*for(std::set<int>::iterator it=attackFlow.begin(); it!=attackFlow.end(); ++it){
         cout<<"choose"<<*it<<endl;
     }
-    cout<<"choose end"<<endl;
+    cout<<"choose end"<<endl;*/
 }
