@@ -48,7 +48,7 @@ class model3:public model{
         
     };
     StateType bin2Num(StateType state);
-    void flowState(int flow, StateType oldStateNum,StateProb2& newStateProb);
+    void flowState(int flow, StateType oldStateNum,StateProb2* newStateProb);
     void transComputation();
     TransProb transComputation_ignore(int);
     TransProb transComputation(int ignored_flow);
