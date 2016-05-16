@@ -180,17 +180,17 @@ int main()
         }*/
         cout<<"gain="<<(*IG)[i]<<endl;;
     }
-  /*  for(int i=0;i<PrXQ->size();++i){
+    for(int i=0;i<PrXQ->size();++i){
         for(int j=0;j<(*PrXQ)[i].size();++j)
             cout<<(*PrXQ)[i][j]<<" ";
         cout<<endl;
-    }*/
+    }
   /* for(int i=0;i<attacker.stateNum;++i){
         cout<<i<<attacker.legalState[i]<<endl;
     }*/
     free(PrXQ);
     free(IG);
- 
+    cout<<attacker.total_time<<endl;
     // //cout<<"triger flowp"<<triggerFlowP(flowPara, 2, flowRuleTable, oldList,bool_oldList);
     ////cout<<"maxv=ceilM(TTL[rule], unit, delta)"<<ceilM(TTL[1], unit, delta)<<endl;
     return 0;

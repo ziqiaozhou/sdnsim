@@ -6,10 +6,10 @@
 #include<omp.h>
 #include <deque>
 #include<set>
-
+#include <chrono>
 #include <unsupported/Eigen/MatrixFunctions>
 using namespace std;
-
+using namespace std::chrono;
 //deque<double> stateProb;
 
 /*
@@ -118,7 +118,9 @@ TransProb model3::transComputation(int ignored_flow)
             StateProb2 newStateProb(stateNum,1);
             // newStateProb.setZero();
             //  //cout<<"newStateProb"<<endl;
+            
             flowState(j, k,newStateProb);
+           
             newStateProb*=flowProb[j];
             if(j==ignored_flow)
                 deletenewStateProb=newStateProb;
@@ -161,6 +163,7 @@ void model3::transComputation()
     for( StateType k=0;k<stateNum;++k){
         // StateType i=legalState[k];
         //   #pragma omp parallel for
+        //cout<<k<<endl;
         for (int j=0; j<=nFlow; ++j)
         {
             newStateProb.setZero();
@@ -250,19 +253,22 @@ TransProb model3::transComputation_ignore(int ignored_flow)
 }
 void model3::init_triggerFlowP(){
     
-    cout<<"baseFullState"<<baseFullState<<legalState[baseFullState]<<endl;;
+ //   cout<<"baseFullState"<<baseFullState<<legalState[baseFullState]<<endl;;
     triggerFlowPTable.resize((stateNum-baseFullState)*nRule);
    // StateType fullNum=(stateNum-baseFullState);
-#pragma omp parallel for
+   // cout<<"init trigger flow"<<(stateNum-baseFullState)*nRule<<endl;
+//#pragma omp parallel for
     for (StateType state=baseFullState; state<stateNum; state++) {
-        StateType base=fullNum*(state-baseFullState);
+        StateType base=nRule*(state-baseFullState);
         StateType list=legalState[state];
+       // cout<<"init trigger flow"<<state<<endl;
         for (int i=1; i<=nRule; ++i) {
             bool exist=exist_bit(list,i);
             //double tmp=triggerFlowP( i, list,exist)+(exist?0:MASK_EXIST);
             triggerFlowPTable[base+i-1]=triggerFlowP( i, list,exist);
         }
     }
+ //   cout<<"init trigger flow"<<endl;
    // cout<<triggerFlowPTable<<endl;
     // triggerFlowPTable.reserve();
     //triggerFlowPTable.setZero();
@@ -273,7 +279,7 @@ double model3::TTLProb_reuse(int rule, StateType stateno)
 {
     StateType state=legalState[stateno];
     int ruleNum=nRule;
-    StateType triggerFlowPTablebase=(stateno-baseFullState)*fullNum;
+    StateType triggerFlowPTablebase=(stateno-baseFullState)*nRule;
     double prob,p;
     double total,lambda;
     double ttlrule=TTL->get(rule);
@@ -299,7 +305,8 @@ double model3::TTLProb_reuse(int rule, StateType stateno)
             //exists[i-1]=existi;
             //////cout<<"ttlprob:for"<<endl;
             lambda =triggerFlowPTable[triggerFlowPTablebase+i-1];// triggerFlowP(flowPara, i, flowRuleTable, state,bool_state);
-            lambdas[i-1]=lambda ;
+            lambdas[i-1]=lambda;
+            cout<<"lambda"<<lambda<<endl;
             /*   if (lambda==0) {
              return 0;
              }*/
@@ -319,8 +326,8 @@ double model3::TTLProb_reuse(int rule, StateType stateno)
                     //  cout<<"prob"<<prob<<endl;
                 }
             }
-            if(prob==0)
-                return 0;
+            /*if(prob==0)
+                return 0;*/
         }
         //   cout<<"prob"<<prob<<endl;
         
@@ -405,7 +412,7 @@ double model3::TTLProb_reuse(int rule, StateType stateno)
 
 double model3::ruleEVT_reuse(int rule, StateType state)
 {
-    StateType triggerFlowPTablebase=(state-baseFullState)*fullNum;
+    StateType triggerFlowPTablebase=(state-baseFullState)*nRule;
     ////cout<<"ruleEVT"<<endl;
     int ruleNum=flowRuleTable->get_rulenum();
     double ttlrule=TTL->get(rule);
@@ -429,7 +436,7 @@ double model3::ruleEVT_reuse(int rule, StateType state)
             else
             {
                 if (rule == i){
-                    p *= poissonNumber0(rPara, 0, (k -1)* unit) * poissonNumber(rPara, 1, unit);
+                    p *= poissonNumber0(rPara, 0, (k -1)* unit) * poissonNumber1(rPara, 1, unit);
                 }
                 else{
                     p *= (1 - poissonNumber0(rPara, 0, min(TTL->get(i), k*unit)));
@@ -441,7 +448,6 @@ double model3::ruleEVT_reuse(int rule, StateType state)
     ////cout<<"ruleEVT"<<endl;
     return prob;
 }
-
 void model3::flowState(int flow, StateType oldStateNum,StateProb2& newStateProb)
 {
     //    //////cout<<"flowState3:enter"<<endl;
@@ -470,8 +476,8 @@ void model3::flowState(int flow, StateType oldStateNum,StateProb2& newStateProb)
                 if(exist_bit(oldbinState, deletedrule)){
                     StateType oneBinNum=clear_bit(oldbinState,deletedrule);
                     StateType newBinNum=cacheLRU(flow, oneBinNum,(matched_rule!=deletedrule)?matched_rule:0);
-                    //double tmp=ruleEVT(deletedrule, oldbinState,true);
-                    double tmp=ruleEVT_reuse(deletedrule, oldStateNum);
+                    double tmp=ruleEVT(deletedrule, oldbinState,true);
+                    //double tmp=ruleEVT_reuse(deletedrule, oldStateNum);
                     //cout<<"tmp="<<tmp<<"deltedt"<<deletedrule<<endl;
                      #pragma omp critical
                     {
@@ -495,6 +501,9 @@ void model3::flowState(int flow, StateType oldStateNum,StateProb2& newStateProb)
         midStateProb.setZero();
         midStateProb.insert(bin2Num(newBinNum))=1;
     }
+    if (oldStateNum==4) {
+        cout<<oldbinState<<"mid"<<midStateProb;
+    }
     midStateProb.prune(epsilon);
     for (StateProb2::InnerIterator it(midStateProb); it; ++it) {
         StateType newList=legalState[it.index()];
@@ -510,30 +519,38 @@ void model3::flowState(int flow, StateType oldStateNum,StateProb2& newStateProb)
                 newrule=matched_rule;
             }
         }
-        ttlStateProb.setZero();
+         ttlStateProb.setZero();
         if (it.index()>=baseNum[k-1])
         {
             //  //cout<<"noless"<<endl;
+           
             ttlStateProb.insert(it.index())=it.value();
             ttl_firststate=it.index();
             int j_it;
             forAllRinS(j_it, oldbinState) {
                 //if((j_it!=newrule)&&exist_bit(oldbinState, j_it)){
                     // cout<<"ttl table"<<j_it<<"index="<<it.index()<<ttlProbTable;
-                    double p=ttlProbTable.coeffRef(it.index(),j_it-1);
+                if(j_it==newrule){
+                    continue;
+                }
+                 double p =TTLProb_reuse(j_it, it.index());
+                
+              //  double p =TTLProb(j_it, it.index());
+               /*     double p=ttlProbTable.coeffRef(it.index(),j_it-1);
                     if(p){
                         p=(p>MASK_EXIST)?0:p;
                     }else{
                         //p =TTLProb(j_it, newList);
                         p =TTLProb_reuse(j_it, it.index());
                         ttlProbTable.insert(it.index(),j_it-1)=(p?p:MASK_EXIST);
-                    }
+                    }*/
                     if (p > 0)
                     {
                         StateType onelist=clear_bit(newList, j_it);
                         double pp=p*it.value();
                         ttlStateProb.insert(bin2Num(onelist))=pp;
                         ttlStateProb.coeffRef(ttl_firststate)-=pp;
+                        cout<<"first"<<ttl_firststate<<endl;
                        // ttlStateProb.coeffRef(ttl_firststate)-=ttlStateProb.sum();
                     }
             }
@@ -541,8 +558,14 @@ void model3::flowState(int flow, StateType oldStateNum,StateProb2& newStateProb)
         {
             ttlStateProb.coeffRef(it.index())=it.value();
         }
+        if (oldStateNum==4) {
+            cout<<"ttlStateProb"<<ttlStateProb;
+        }
         //ttlStateProb.prune(epsilon);
         newStateProb+=ttlStateProb;
+    }
+    if (oldStateNum==4) {
+        cout<<"new"<<newStateProb;
     }
     newStateProb.prune(epsilon);
     //cout<<"newstateprob"<<newStateProb<<endl;

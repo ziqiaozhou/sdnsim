@@ -3,6 +3,7 @@
 #include<deque>
 #include"sdnsim.h"
 #include<set>
+#include <chrono>
 #define exist_bit( u, b) (u&(1<<(b-1)))
 #define exist_bit_c( u, b) u[b]
 #define MASK_EXIST 2
@@ -16,6 +17,7 @@ class model3:public model{
     StateType baseNum[2];
      TransProb ttlProbTable;
     StateType fullNum;
+    long total_time;
     std::vector<double> triggerFlowPTable;
     inline StateType stateNumCompute(int mSize,int ruleNum)
     {
@@ -33,7 +35,7 @@ class model3:public model{
             maxTrans+=tmp*ruleNum*nChoosek(i, 2);
         }
         baseFullState=stateNum-nChoosek(nRule,mSize);
-       
+        //cout<<"base full"<<baseFullState;
         fullNum=(stateNum-baseFullState);
         return stateNum;
     }
@@ -43,6 +45,7 @@ class model3:public model{
     model3(floatCounter * flowPara, FlowRuleTable *flowRuleTable, floatCounter * TTL, int mSize, int initialStateNum, double interval, double unit, double delta):model(flowPara,flowRuleTable,TTL,mSize,initialStateNum,interval,unit,delta){
         //StateType i,j=1;
         stateNum=0;
+        total_time=0;
         std::cout<<"init model3"<<std::endl;
 
         //#pragma omp parallel for
@@ -62,6 +65,7 @@ class model3:public model{
         initFlowProb();
        // maxTrans=nChoosek(nRule, nRule/2);
        // maxTrans
+        
         ttlProbTable.resize(stateNum,nRule);
         ttlProbTable.reserve(ttlPNum);
         ttlProbTable.setZero();
