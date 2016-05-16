@@ -17,81 +17,6 @@ typedef int RuleType;
 typedef std::list<RuleType> LISTINT;
 typedef std::list<probType> LISTFLOAT;
 
-class Counter{
-    //one bit per rule;
-    char * counter;
-    int ruleNum;
-    int realsize;
-    public:
-    Counter(int ruleNum0){
-        ruleNum=ruleNum0;
-         realsize=(ruleNum-1)/(sizeof(char))+1;
-        counter=(char* )malloc(realsize);
-        memset(counter,0,realsize);
-    }
-    void reset(){
-        memset(counter,0,(ruleNum-1)/8+1);
-    }
-    bool get(int index){
-         int group=index/8;
-         int offset=index%8;
-        return ((int)(counter[group])>>offset)&1;
-    }
-    int size(){
-        return ruleNum;
-    }
-    bool operator[](int idx) {
-        return get(idx);
-    }
-
-    void set(int index,bool value){
-        int group=index/8;
-        int offset=index%8;
-        if(value)
-         counter[group]=(int)(counter[group])|(1<<offset);
-        else
-            counter[group]=(int)(counter[group])&~(1<<offset);
-    }
-
-    ~Counter(){
-        free(counter);
-    }
-};
-typedef  Counter BinState;
-class BoolCounter{
-    //one bit per rule;
-    bool * counter;
-    int ruleNum;
-    int realsize;
-    public:
-    BoolCounter(int ruleNum0){
-        ruleNum=ruleNum0;
-         realsize=ruleNum*sizeof(bool);
-        counter=(bool* )malloc(realsize);
-        memset(counter,0,realsize);
-    }
-    void reset(){
-        memset(counter,0,realsize);
-    }
-    bool get(int rule){
-        return counter[rule-1];
-    }
-    int size(){
-        return ruleNum;
-    }
-    bool operator[](int rule) {
-        return get(rule-1);
-    }
-
-    void set(int rule,bool value){
-        counter[rule-1]=value;
-    }
-
-    ~BoolCounter(){
-        free(counter);
-    }
-};
-
 template <class T>
 //:public Eigen::Matrix<T,1,Eigen::Dynamic>
 class TCounter{
@@ -101,9 +26,7 @@ class TCounter{
     int realsize;
     public:
     TCounter(){
-        
     }
-    
     TCounter(int ruleNum0){
       //  this->resize(1,ruleNum0);
         ruleNum=ruleNum0;
@@ -252,13 +175,15 @@ class FlowRuleTable: public Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>{
     }
     inline int get_high_rule(int flow)  {
         int rule=0;
-        int prio=0;
-        for(int i=1;i<=ruleNum;++i){
+        int prio=0,tmp=0;
+        this->row(flow-1).maxCoeff(&tmp,&rule);
+       /* for(int i=1;i<=ruleNum;++i){
             if(get(flow,i)>prio){
                 rule=i;
                 prio=get(flow,i);
             }
-        }
+        }*/
+        ++rule;
         return rule;
     }
     inline void set(int flow,int rule,int value)  {
@@ -520,8 +445,6 @@ inline int next_valid_rule(StateType oldState,StateType &numState)  {
     // std:://cout<<"num"<<numState<<std::endl;
     return ruleNo;
 };
-
-Counter list2Counter(LISTINT all,int ruleNum);
 
 int nonZeroNum(LISTINT state);
 //int  num2bin(StateType stateNumber, int ruleNumber,BoolState * state,int& nonZeroNum);

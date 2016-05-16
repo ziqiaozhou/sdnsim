@@ -167,13 +167,7 @@ void model3::transComputation()
             // newStateProb.setZero();
             //  //cout<<"newStateProb"<<endl;
             flowState(j, k,newStateProb);
-           if(allnewStateProb.size()>j)
-                allnewStateProb[j].push_back(newStateProb);
-            else{
-                allnewStateProb.push_back(deque<StateProb2>());
-                allnewStateProb[j].push_back(newStateProb);
-            }
-
+           
             newStateProb*=flowProb[j];
             //  cout<<"newStateProb"<<newStateProb<<endl;
             // block<stateNum,1>(1,k)
@@ -181,6 +175,13 @@ void model3::transComputation()
             {
                 Trans.col(k)+=newStateProb;
             }
+            if(allnewStateProb.size()>j)
+                allnewStateProb[j].push_back(newStateProb);
+            else{
+                allnewStateProb.push_back(deque<StateProb2>());
+                allnewStateProb[j].push_back(newStateProb);
+            }
+
             /* for(size_t row = 0, nRows = newStateProb.rows(); row < nRows; ++row)
              {
              //cout<<i<<j<<"newStateProb"<<stateprob.first<<","<<stateprob.second<<endl;
@@ -214,12 +215,12 @@ TransProb model3::transComputation_ignore(int ignored_flow)
         // StateType i=legalState[k];
         int j=ignored_flow;
         StateProb2 newStateProb=allnewStateProb[j][k];
-        double baseprob=flowProb(j);
+      //  double baseprob=flowProb(j);
         //  //cout<<"newStateProb"<<endl;
         
         // //cout<<"for"<<newStateProb.size()<<endl;
         //for( StateType k=0;k<legalState.size();++k){
-        newStateProb*=baseprob;
+        //newStateProb*=baseprob;
         // newtrans=(newtrans-newStateProb);
         newtrans.col(k)-=newStateProb;
         /*  for(size_t row = 0, nRows = newStateProb.rows(); row < nRows; ++row)
@@ -472,7 +473,7 @@ void model3::flowState(int flow, StateType oldStateNum,StateProb2& newStateProb)
                     //double tmp=ruleEVT(deletedrule, oldbinState,true);
                     double tmp=ruleEVT_reuse(deletedrule, oldStateNum);
                     //cout<<"tmp="<<tmp<<"deltedt"<<deletedrule<<endl;
-                    // #pragma omp critical
+                     #pragma omp critical
                     {
                         midStateProb.insert(bin2Num(newBinNum))=tmp;
                     }

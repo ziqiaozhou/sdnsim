@@ -79,6 +79,9 @@ int main()
     table.set(2,2,1);
     ////cout<<"table"<<endl;
     table.set(3,3,1);
+    //int tmp;
+    //int rule;
+  //  cout<<table.row(1).maxCoeff(&tmp,&rule)<<"rule="<<rule;
     flowPara[1]=0.3;
     flowPara[2]=0.8;
     flowPara[3]=0.5;

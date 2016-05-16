@@ -13,13 +13,7 @@ using namespace std;
 
 
 
-Counter list2Counter(LISTINT all,int ruleNum)
-{
-    Counter counter=Counter(ruleNum);
-    for(LISTINT::iterator it=all.begin(); it!=all.end(); ++it)
-        counter.set((*it)-1, true);
-    return counter;
-};
+
 
 
 struct SeqFlowSorter seqflowSorter;

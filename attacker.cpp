@@ -111,8 +111,8 @@ void Attacker::conditionalEntropyComputeM3(int flowInterest,int initialStateNum,
     cout<<"trans complete\n";
     TransA=transComputation_ignore(flowInterest);
     
-   cout<<Trans<<endl;
-    cout<<TransA<<endl;
+   //cout<<Trans<<endl;
+   // cout<<TransA<<endl;
 
     cout<<Trans.nonZeros()<<endl;
     
