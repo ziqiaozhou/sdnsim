@@ -88,7 +88,7 @@ public:
     ~TCounter(){
         //  std:://cout<<"free"<<counter<<std::endl;
         if(counter!=NULL){
-        free(counter);
+            free(counter);
             counter=NULL;
         }
     }
@@ -161,11 +161,11 @@ typedef Eigen::SparseVector<double> StateProb2;
 class FlowRuleTable: public Eigen::Matrix<int,Eigen::Dynamic,Eigen::Dynamic>{
     //one bit per (rule,flow) pair;
     // unsigned int ** counter;
-   
+    
     //  int realsize;
 public:
     FlowRuleTable(int flowNum,int ruleNum){
-     
+        
         this->resize(flowNum,ruleNum);
         this->setZero();
         //     realsize=(ruleNum)*(flowNum);
@@ -177,7 +177,7 @@ public:
          }*/
     }
     ~FlowRuleTable(){
-               //std:://cout<<"free"<<std::endl;
+        //std:://cout<<"free"<<std::endl;
         //free(counter);
     }
     inline int& get(int flow,int rule)  {

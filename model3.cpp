@@ -63,6 +63,7 @@ double model3::TTLStateProb( StateType state,vector<double> lambdas)
         }
     }else{
         total=1;
+#pragma omp parallel for reduction(*:total)
         for(int i=1; i<=nRule; ++i)
         {
             double lambda =lambdas[i-1];// triggerFlowP(flowPara, i, flowRuleTable, state,bool_state);
@@ -74,7 +75,6 @@ double model3::TTLStateProb( StateType state,vector<double> lambdas)
                 total*= poissonNumber0(lambda, 0, TTL->get(i));
                 //  cout<<"prob"<<prob<<endl;
             }
-            
         }
         
     }
@@ -175,7 +175,9 @@ TransProb model3::transComputation(int ignored_flow)
     //   TransProb Trans;
     Trans.resize(stateNum,stateNum);
     Trans.reserve(maxTrans);
+    cout<<"hi";
     Trans.setZero();
+    cout<<"hi2";
     TransProb TransA=Trans;
     
     //#pragma omp parallel for
@@ -187,10 +189,10 @@ TransProb model3::transComputation(int ignored_flow)
         for (int j=0; j<=nFlow; ++j)
         {
             
-            newStateProb.reserve(j*nRule);
-            newStateProb.setZero();
+            //newStateProb.reserve();
+            //newStateProb.setZero();
             //  //cout<<"newStateProb"<<endl;
-            
+           // cout<<k;
             flowState(j, k,newStateProb);
             newStateProb*=flowProb[j];
             if(j==ignored_flow)
@@ -204,10 +206,10 @@ TransProb model3::transComputation(int ignored_flow)
         {
             TransA.col(k)=Trans.col(k)-deletenewStateProb;
         }
-      
+        
     }
-    Trans.prune(epsilon,epsilon);
-    TransA.prune(epsilon,epsilon);
+    Trans.prune(0,epsilon);
+    TransA.prune(0,epsilon);
     return TransA;
 }
 
@@ -645,16 +647,14 @@ void model3::flowState(int flow, StateType oldStateNum,StateProb2 & newStateProb
         }
         newStateProb+=ttlStateProb;
     }
+    newStateProb.prune(0);
     // cout<<"end flowstate"<<endl;
     // newStateProb.prune(epsilon);
 }
 
 void model::initFlowProb(){
     
-    if(!flowProb.size()){
-        flowProb.resize(stateNum);
-    }
-    flowProb.resize(stateNum);
+    flowProb.resize(nFlow+1);
     
     double prob=1;
     for (int i = 1; i<=nFlow; ++i)

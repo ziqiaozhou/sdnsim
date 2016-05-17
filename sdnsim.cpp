@@ -413,8 +413,8 @@ double model::triggerFlowP(int rule,StateType state,bool exist)
 double model::TTLProb(int rule, StateType state, vector<double> lambdas)
 {
     int ruleNum=nRule;
-    double prob,p;
-    double total,lambda;
+    double prob;
+    double total;
     int statesize=nonZeroNum(state);
     bool full=(statesize==mSize);
     double ttlrule=TTL->get(rule);
@@ -436,10 +436,11 @@ double model::TTLProb(int rule, StateType state, vector<double> lambdas)
     total = 1;
     if (full){
         total = 0;
+#pragma omp parallel for reduction(*:prob)
         for(int i=1; i<=ruleNum; ++i)
         {
             bool existi=exist_bit(state,i);
-            lambda =lambdas[i-1];
+            double lambda =lambdas[i-1];
             // lambda =triggerFlowP(i,state,existi);// triggerFlowP(flowPara, i, flowRuleTable, state,bool_state);
             // lambdas[i-1]=lambda;
             if (i == rule){
@@ -468,11 +469,12 @@ double model::TTLProb(int rule, StateType state, vector<double> lambdas)
         {
             int ceil0=ceilM(maxt, unit, delta);
             int ceilstart=ceilM(ttlrule, unit, delta)+1;
+            #pragma omp parallel for reduction(+:prob)
             for (int k =ceilstart; k<=ceil0; ++k)
             {
                 if ((TTL->get(it) > k * unit) && (it != rule)){
-                    lambda=lambdas[it-1];
-                    p = poissonNumber0(lambda, 0, (k - 1) * unit) * (1 - poissonNumber0(lambda, 0, unit));
+                    double lambda=lambdas[it-1];
+                    double p = poissonNumber0(lambda, 0, (k - 1) * unit) * (1 - poissonNumber0(lambda, 0, unit));
                     for(int j=1; j<=ruleNum; ++j)
                     {
                         if(j!=it){
@@ -495,10 +497,11 @@ double model::TTLProb(int rule, StateType state, vector<double> lambdas)
         }
         //cout<<"lambdas3"<<endl;
     }else{
+        #pragma omp parallel for reduction(*:prob)
         for(int i=1; i<=ruleNum; ++i)
         {
             bool existi=exist_bit(state,i);
-            lambda =lambdas[i-1];// triggerFlowP(flowPara, i, flowRuleTable, state,bool_state);
+            double lambda =lambdas[i-1];// triggerFlowP(flowPara, i, flowRuleTable, state,bool_state);
             if (i == rule){
                 prob *=(1 - poissonNumber0(lambda, 0, unit)) * poissonNumber0(lambda, 0, ttlrule - unit);
                 //     cout<<"prob"<<prob<<endl;

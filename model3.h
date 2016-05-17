@@ -8,14 +8,14 @@
 #define exist_bit_c( u, b) u[b]
 #define MASK_EXIST 2
 class model3:public model{
-    public:
+public:
     //Eigen::SparseVector<double> allnewStateProb;
     std::deque<std::deque<StateProb2>>allnewStateProb;
     StateType ttlPNum;
     StateType baseFullState;
     StateType maxTrans;
     StateType baseNum[2];
-     TransProb ttlProbTable;
+    TransProb ttlProbTable;
     StateType fullNum;
     long total_time;
     std::vector<double> triggerFlowPTable;
@@ -77,17 +77,17 @@ class model3:public model{
         initFlowProb();
         // maxTrans=nChoosek(nRule, nRule/2);
         // maxTrans
-      //  ttlProbTable.resize(stateNum,nRule);
-        //ttlProbTable.reserve(ttlPNum);
-        //ttlProbTable.setZero();
-       // init_triggerFlowP();
+       // ttlProbTable.resize(stateNum,nRule);
+       // ttlProbTable.reserve(ttlPNum);
+      //  ttlProbTable.setZero();
+        //    init_triggerFlowP();
         std::cout<<"maxTrans"<<maxTrans<<std::endl;
     };
     StateProb2& getStateProb(){
         return stateProb;
     }
     ~model3(){
-           }
+    }
     
 };
 #endif // MODEL3_H_INCLUDED

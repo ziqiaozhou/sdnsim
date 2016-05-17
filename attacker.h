@@ -24,8 +24,8 @@ public:
     void run(int qNum0,int flowInterest,StateType initialStateNum,std::set<int>&attackFlow, MatD &PrXQ,VecD &IG);
     double flowProbCompute3M(StateProb2& stateProb0,std::set<int> &queryInterest,int queryResult);
     void conditionalEntropyComputeM3(int flowInterest,int initialStateNum,VecD&conditionalEntropyQ,MatD&PrXQ);
-   // void run(int qNum0,int flowInterest,StateType initialStateNum,std::set<int>&attackFlow, MatD&PrXQ,VecD&IG);
-        
+    // void run(int qNum0,int flowInterest,StateType initialStateNum,std::set<int>&attackFlow, MatD&PrXQ,VecD&IG);
+    
 };
 StateType num2StateAttack(int num, int flowNum,int qNum);
 std::set<int> bin2SetAttack(int num, int flowNum,int qNum);
