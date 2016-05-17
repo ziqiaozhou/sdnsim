@@ -431,7 +431,7 @@ double model::TTLProb(int rule, StateType state, vector<double> lambdas)
             maxt=tmp;
         }
     }
-
+    
     prob = 1;
     total = 1;
     if (full){
@@ -440,8 +440,8 @@ double model::TTLProb(int rule, StateType state, vector<double> lambdas)
         {
             bool existi=exist_bit(state,i);
             lambda =lambdas[i-1];
-           // lambda =triggerFlowP(i,state,existi);// triggerFlowP(flowPara, i, flowRuleTable, state,bool_state);
-           // lambdas[i-1]=lambda;
+            // lambda =triggerFlowP(i,state,existi);// triggerFlowP(flowPara, i, flowRuleTable, state,bool_state);
+            // lambdas[i-1]=lambda;
             if (i == rule){
                 prob *=(1 - poissonNumber0(lambda, 0, unit)) * poissonNumber0(lambda, 0, ttlrule - unit);
                 //     cout<<"prob"<<prob<<endl;
@@ -495,7 +495,7 @@ double model::TTLProb(int rule, StateType state, vector<double> lambdas)
         }
         //cout<<"lambdas3"<<endl;
     }else{
-               for(int i=1; i<=ruleNum; ++i)
+        for(int i=1; i<=ruleNum; ++i)
         {
             bool existi=exist_bit(state,i);
             lambda =lambdas[i-1];// triggerFlowP(flowPara, i, flowRuleTable, state,bool_state);
@@ -505,11 +505,11 @@ double model::TTLProb(int rule, StateType state, vector<double> lambdas)
             }
             else {
                 if (existi){
-                    prob *=(1 - poissonNumber0(lambda, 0, min(ttlrule, TTL->get(i))));
+                    prob *=(1 - poissonNumber0(lambda, 0, TTL->get(i)));
                     // cout<<"prob"<<prob<<endl;
                 }
                 else{
-                    prob  *= poissonNumber0(lambda, 0, min(ttlrule, TTL->get(i)));
+                    prob  *= poissonNumber0(lambda, 0, TTL->get(i));
                     //  cout<<"prob"<<prob<<endl;
                 }
             }
@@ -519,9 +519,9 @@ double model::TTLProb(int rule, StateType state, vector<double> lambdas)
     ////cout<<"total="<<total<<endl;
     ////cout<<"prob="<<prob<<endl;
     //cout<<"prob="<<prob<<endl;
-  /*  if(prob==0)
-        return 0;
-       prob /= total;*/
+    /*  if(prob==0)
+     return 0;
+     prob /= total;*/
     // free(lambdas);
     return prob;
 }

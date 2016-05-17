@@ -77,10 +77,10 @@ class model3:public model{
         initFlowProb();
         // maxTrans=nChoosek(nRule, nRule/2);
         // maxTrans
-        ttlProbTable.resize(stateNum,nRule);
-        ttlProbTable.reserve(ttlPNum);
-        ttlProbTable.setZero();
-        init_triggerFlowP();
+      //  ttlProbTable.resize(stateNum,nRule);
+        //ttlProbTable.reserve(ttlPNum);
+        //ttlProbTable.setZero();
+       // init_triggerFlowP();
         std::cout<<"maxTrans"<<maxTrans<<std::endl;
     };
     StateProb2& getStateProb(){

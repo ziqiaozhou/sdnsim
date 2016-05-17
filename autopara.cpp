@@ -274,7 +274,7 @@ int Automatic::generate(){
         //save("/Users/ziqiaozhou/GoogleDrive/sdncode/database");
         if(attackFlow.count(target)==0){
             for(std::set<int>::iterator it=attackFlow.begin(); it!=attackFlow.end(); ++it){
-                if (PrXQ((*it)-1,0)>0.5 && PrXQ((*it)-1,1)<1) {
+                if (PrXQ((*it)-1,0)>0.5 && PrXQ((*it)-1,1)<0.5) {
                     record_case=true;
                     choose=*it;
                     break;
@@ -285,6 +285,6 @@ int Automatic::generate(){
             save("../data/");
         
     }
-    
-    return flowInterest;
+    return 0;
+    //return flowInterest;
 }
