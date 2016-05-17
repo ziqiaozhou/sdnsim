@@ -106,14 +106,14 @@ void Attacker::conditionalEntropyComputeM3(int flowInterest,int initialStateNum,
      TransA =transComputation(flowInterest) ;
      else
      TransA = transComputation_ignore(flowInterest);*/
-    /*if(updated){
+  /*  if(updated){
      transComputation() ;
      updated=false;
      }
      cout<<"trans complete\n";
      TransA=transComputation_ignore(flowInterest);
-     */
-    TransA=transComputation(flowInterest);
+    */
+    transComputation(flowInterest,TransA);
    // cout<<Trans<<endl;
     //cout<<TransA<<endl;
     
@@ -142,7 +142,7 @@ void Attacker::conditionalEntropyComputeM3(int flowInterest,int initialStateNum,
     stateProb=stateProbI;
 }
 
-void Attacker::run(int qNum0,int flowInterest,StateType initialStateNum,set<int>&attackFlow, MatD &PrXQ,VecD &IG){
+void Attacker::run(int qNum0,int flowInterest,StateType initialStateNum,set<set<int>>&attackFlow, MatD &PrXQ,VecD &IG){
     init();
     updated=true;
     cout<<"run1";
@@ -169,13 +169,18 @@ void Attacker::run(int qNum0,int flowInterest,StateType initialStateNum,set<int>
     for (int i = 0;i<queryNum;++i){
         if ( IG(i) > maxm  ){
             maxm = IG(i);
-            attackFlow = bin2SetAttack(i, flowNum, qNum);
+            attackFlow.clear();
+            attackFlow.insert(bin2SetAttack(i, flowNum, qNum));
         }
         if(abs(IG(i) - maxm) <0.0000000001){
             set<int> attackFlowMid = bin2SetAttack(i, flowNum, qNum);
+            
             if(attackFlowMid.count(flowInterest)){
-                attackFlow = attackFlowMid;
+                attackFlow.clear();
+                attackFlow.insert(attackFlowMid);
                 maxm = IG(i);
+            }else{
+                attackFlow.insert(attackFlowMid);
             }
         }
     }

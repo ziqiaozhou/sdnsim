@@ -36,7 +36,8 @@ int main(int argc, char *argv[])
     double delta=0.001;
     int target=1;
     int qnum=1;
-    int TTLmax=5,runtimes=10;
+    double TTLmax=1;
+    int runtimes=10;
     string label="";
     if(argc>1)
         label=argv[1];
@@ -47,9 +48,9 @@ int main(int argc, char *argv[])
     if(argc>4)
         msizerate=stod(argv[4]);
     if(argc>5)
-        TTLmax=stoi(argv[5]);
+        TTLmax=stod(argv[5]);
     if(argc>6)
-        interval=stoi(argv[6]);
+        interval=stod(argv[6]);
     if(argc>7)
         runtimes=stoi(argv[7]);
     FlowRuleTable table(flowNum,ruleNum);//flowNUm,ruleNUm

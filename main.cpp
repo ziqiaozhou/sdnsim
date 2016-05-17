@@ -130,7 +130,7 @@ int main()
     //memset(c,1,10);
     StateType l=1023;
 #endif
-    set<int>attackFlow;
+    set<set<int>>attackFlow;
     MatD PrXQ;
     VecD IG;
 #if 1
@@ -180,8 +180,4 @@ int main()
     ////cout<<"maxv=ceilM(TTL[rule], unit, delta)"<<ceilM(TTL[1], unit, delta)<<endl;
     return 0;
 }
-
-
-#if 0
-#endif
 

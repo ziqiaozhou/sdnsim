@@ -168,7 +168,7 @@ StateType model3::bin2Num(StateType state)
 };
 
 
-TransProb model3::transComputation(int ignored_flow)
+void model3::transComputation(int ignored_flow,TransProb & TransA)
 {
     //omp_set_num_threads(2);
     
@@ -178,7 +178,7 @@ TransProb model3::transComputation(int ignored_flow)
     cout<<"hi";
     Trans.setZero();
     cout<<"hi2";
-    TransProb TransA=Trans;
+     TransA=Trans;
     
     //#pragma omp parallel for
     StateProb2 newStateProb(stateNum);
@@ -210,7 +210,7 @@ TransProb model3::transComputation(int ignored_flow)
     }
     Trans.prune(0,epsilon);
     TransA.prune(0,epsilon);
-    return TransA;
+    //return TransA;
 }
 
 
@@ -541,7 +541,7 @@ void model3::flowState(int flow, StateType oldStateNum,StateProb2 & newStateProb
             int deletedrule;
             // StateType total=oldbinState;
             double totalmid=0;
-            //#pragma omp parallel for
+            #pragma omp parallel for
             for (int deletedrule=1; deletedrule<=nRule; deletedrule++) {
                 if(exist_bit(oldbinState, deletedrule)){
                     StateType oneBinNum=clear_bit(oldbinState,deletedrule);
@@ -551,7 +551,7 @@ void model3::flowState(int flow, StateType oldStateNum,StateProb2 & newStateProb
                     
                     // double tmp=ruleEVT_reuse(deletedrule, oldStateNum);
                     //cout<<"tmp="<<tmp<<"deltedt"<<deletedrule<<endl;
-                    //#pragma omp critical
+                    #pragma omp critical
                     {
                         midStateProb.insert(bin2Num(newBinNum))=tmp;
                     }

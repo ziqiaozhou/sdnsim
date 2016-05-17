@@ -50,8 +50,8 @@ public:
     StateType bin2Num(StateType state);
     void flowState(int flow, StateType oldStateNum,StateProb2& newStateProb);
     void transComputation();
-    TransProb transComputation_ignore(int);
-    TransProb transComputation(int ignored_flow);
+    TransProb transComputation_ignore(int ignored_flow);
+    void transComputation(int ignored_flow,TransProb & TransA);
     double ruleEVT_reuse(int rule, StateType stateNum);
     void run();
     void init(){

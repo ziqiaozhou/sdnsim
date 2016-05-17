@@ -93,7 +93,7 @@ int Automatic::paraGenerate(int nFlow0, int nRule0, double alpha, float TTLMax, 
             {
                 flag = 0;
                 goto retry;
-               // continue;
+                // continue;
             }
         }
         for (int j = 1; j<=nFlow; ++j)
@@ -101,7 +101,7 @@ int Automatic::paraGenerate(int nFlow0, int nRule0, double alpha, float TTLMax, 
             if (table.row(j-1).sum() == 0)
             {
                 flag = 0;
-                 goto retry;
+                goto retry;
                 //continue;
             }
         }
@@ -185,7 +185,7 @@ int Automatic::paraGenerate(int nFlow0, int nRule0, double alpha, float TTLMax, 
         if (posLen == 0)
         {
             flag = 0;
-             goto retry;
+            goto retry;
             // cout<<"len==0"<<endl;
             //cout<<table<<endl;
         }
@@ -229,13 +229,49 @@ void Automatic::save(string path){
     myfile<<endl<<"------target--------\n";
     myfile<<target<<endl;
     myfile<<"------result--------\n";
-    for(std::set<int>::iterator it=attackFlow.begin(); it!=attackFlow.end(); ++it)
-        myfile<<*it<<endl;
+    for(std::set<set<int>>::iterator oneset=attackFlow.begin(); oneset!=attackFlow.end(); ++oneset){
+        for(std::set<int>::iterator it=oneset->begin(); it!=oneset->end(); ++it){
+            myfile<<*it<<"\t";
+        }
+        myfile<<endl;
+    }
+    myfile<<"------details--------\n";
     myfile<<PrXQ.transpose()<<endl;
     myfile<<IG.transpose()<<endl;
     
     myfile.close();
 }
+
+
+void Automatic::save_tmp(string path){
+    tmp_times++;
+    //label2=chrono::system_clock::now().time_since_epoch().count();
+    ofstream myfile;
+    myfile.open(path+"/"+to_string(nFlow)+"_"+to_string(nRule)+"para"+label+"_"+to_string(tmp_times)+".txt");
+    myfile<<nFlow<<"\t"<<nRule<<"\t"<<mSize<<"\t"<<TTLmax<<endl;
+    myfile<<(*flowRuleTable);
+    myfile<<endl;
+    for(int i=0;i<nRule;i++)
+        myfile<<TTL->get(i+1)<<"\t";
+    myfile<<endl;
+    for(int i=0;i<nFlow;i++)
+        myfile<<flowPara->get(i+1)<<"\t";
+    myfile<<endl<<"------target--------\n";
+    myfile<<target<<endl;
+    myfile<<"------result--------\n";
+    for(std::set<set<int>>::iterator oneset=attackFlow.begin(); oneset!=attackFlow.end(); ++oneset){
+        for(std::set<int>::iterator it=oneset->begin(); it!=oneset->end(); ++it){
+            myfile<<*it<<"\t";
+        }
+        myfile<<endl;
+    }
+    myfile<<"------details--------\n";
+    myfile<<PrXQ.transpose()<<endl;
+    myfile<<IG.transpose()<<endl;
+    
+    myfile.close();
+}
+
 int Automatic::generate(int flowNum, int ruleNum, double alpha, float TTLMax0,int interval0,int runTimes){
     //vector<> resultV = zeros(1,12);
     interval=interval0;
@@ -254,23 +290,26 @@ int Automatic::generate(int flowNum, int ruleNum, double alpha, float TTLMax0,in
     for(int i=0;i<runTimes;++i){
         int tmp=paraGenerate(nFlow, nRule, alpha, TTLmax,*flowRuleTable,*flowPara, *TTL,flowInterest);
         cout<<"generated"<<endl;
-     /*   cout<<*flowRuleTable<<endl;
-        for(int i=0;i<nRule;i++)
-            cout<<(*TTL)[i+1]<<" ";
-        cout<<endl;
-        for(int i=0;i<nFlow;i++){
-            cout<<(*flowPara)[i+1]<<" ";
-        }
-        cout<<flowInterest<<endl;*/
+        /*   cout<<*flowRuleTable<<endl;
+         for(int i=0;i<nRule;i++)
+         cout<<(*TTL)[i+1]<<" ";
+         cout<<endl;
+         for(int i=0;i<nFlow;i++){
+         cout<<(*flowPara)[i+1]<<" ";
+         }
+         cout<<flowInterest<<endl;*/
         target=flowInterest;
         attackFlow.empty();
         updated=true;
         run(qNum,target,initialStateNum,attackFlow,PrXQ,IG);
         bool record_case=false;
         //save("/Users/ziqiaozhou/GoogleDrive/sdncode/database");
-        
-        if(attackFlow.count(target)==0){
-            for(std::set<int>::iterator it=attackFlow.begin(); it!=attackFlow.end(); ++it){
+        for(std::set<set<int>>::iterator oneset=attackFlow.begin(); oneset!=attackFlow.end(); ++oneset){
+            if(oneset->count(target)>0){
+                record_case=false;
+                break;
+            }
+            for(std::set<int>::iterator it=oneset->begin(); it!=oneset->end(); ++it){
                 if (PrXQ((*it)-1,0)>0.5 && PrXQ((*it)-1,1)<0.5) {
                     record_case=true;
                     choose=*it;
@@ -280,7 +319,8 @@ int Automatic::generate(int flowNum, int ruleNum, double alpha, float TTLMax0,in
         }
         if(record_case)
             save("../data/");
-        
+        else
+            save_tmp("../tmp/");
         
     }
     return 0;
