@@ -31,7 +31,7 @@ long double model3::TTLStateProb( StateType state,vector<long double> lambdas)
         total = 0;
         
         int ceil0=ceilM(maxt, unit, delta);
-#pragma omp parallel for reduction(+:total)
+//#pragma omp parallel for reduction(+:total)
         for (int k =statesize; k<=ceil0; ++k)
         {
             int it;
@@ -63,7 +63,7 @@ long double model3::TTLStateProb( StateType state,vector<long double> lambdas)
         }
     }else{
         total=1;
-#pragma omp parallel for reduction(*:total)
+//#pragma omp parallel for reduction(*:total)
         for(int i=1; i<=nRule; ++i)
         {
             long double lambda =lambdas[i-1];// triggerFlowP(flowPara, i, flowRuleTable, state,bool_state);
@@ -541,7 +541,7 @@ void model3::flowState(int flow, StateType oldStateNum,StateProb2 & newStateProb
             int deletedrule;
             // StateType total=oldbinState;
             long double totalmid=0;
-            #pragma omp parallel for
+            //#pragma omp parallel for
             for (int deletedrule=1; deletedrule<=nRule; deletedrule++) {
                 if(exist_bit(oldbinState, deletedrule)){
                     StateType oneBinNum=clear_bit(oldbinState,deletedrule);
@@ -551,7 +551,7 @@ void model3::flowState(int flow, StateType oldStateNum,StateProb2 & newStateProb
                     
                     // long double tmp=ruleEVT_reuse(deletedrule, oldStateNum);
                     ////cout<<"tmp="<<tmp<<"deltedt"<<deletedrule<<endl;
-                    #pragma omp critical
+                    //#pragma omp critical
                     {
                         midStateProb.insert(bin2Num(newBinNum))=tmp;
                     }
