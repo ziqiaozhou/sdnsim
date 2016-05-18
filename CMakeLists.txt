@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-SET(CMAKE_CXX_COMPILER "g++-5")
+SET(CMAKE_CXX_COMPILER "g++")
 #find_package(openmp)
 project (test3)
 add_executable(test3 main.cpp autopara.cpp model3.cpp sdnsim.cpp attacker.cpp)
