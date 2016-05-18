@@ -623,5 +623,11 @@ long double unitComputation(floatCounter *flowPara,long double delta,long double
             }
         }
     }
+    for (int i=1;i<=ruleNum;++i){
+        if(time>=TTL->get(i)-limit){
+            time/=2;
+            break;
+        }
+    }
     return time;
 }
