@@ -282,7 +282,7 @@ TransProb model3::transComputation_ignore(int ignored_flow)
      }*/
     TransProb newtrans=Trans;
     //TransProb::iterator it_in_trans;
-#pragma omp parallel for
+//#pragma omp parallel for
     for( StateType k=0;k<legalState.size();++k){
         // StateType i=legalState[k];
         int j=ignored_flow;
