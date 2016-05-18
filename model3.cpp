@@ -628,16 +628,12 @@ void model3::flowState(int flow, StateType oldStateNum,StateProb2 & newStateProb
                  p =TTLProb_reuse(j_it, it.index());
                  ttlProbTable.insert(it.index(),j_it-1)=(p?p:MASK_EXIST);
                  }*/
-                if (p > epsilon)
+                if (p > 0)
                 {
                     StateType onelist=clear_bit(newList, j_it);
-                    cout<<p<<endl;
+                    //cout<<p<<endl;
                     p/=ptotal;
                     long double pp=p*it.value();
-                    if (pp>1) {
-                        pp=1;
-                        caseType=CASE_SPECIAL;
-                    }
                     //cout<<p<<"newlist"<<newList<<"total="<<ptotal<<"pp="<<pp<<endl;
                     ttlStateProb.insert(bin2Num(onelist))=pp;
                     ttlStateProb.coeffRef(ttl_firststate)-=pp;
