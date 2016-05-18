@@ -104,14 +104,14 @@ int model::doesMatch(int flow,StateType stateNum)
     int prio=0;
     int ruleNo;
     int matched_rule=0;
-    // //cout<<"doesMatch:cache state,flow"<<stateNum<<flow<<endl;
+    // ////cout<<"doesMatch:cache state,flow"<<stateNum<<flow<<endl;
     if (stateNum==0) {
         return 0;
     }
     forAllRinS(ruleNo, stateNum){
-        //  //cout<<"doesMatch:cache2"<<endl;
+        //  ////cout<<"doesMatch:cache2"<<endl;
         tmp_prio=flowRuleTable->get(flow, ruleNo);
-        //  //cout<<"doesMatch:cache3"<<endl;
+        //  ////cout<<"doesMatch:cache3"<<endl;
         if(tmp_prio>prio)
         {
             //rule = ruleNo;
@@ -151,7 +151,7 @@ int  num2bin(StateType stateNumber, int ruleNumber,BoolState * state,int& nonZer
         int tmp=stateNumber & 1;
         stateNumber=stateNumber>>1;
         state->set(i,tmp);
-        //////cout<<stateNumber<<",tmp="<<tmp<<"i"<<i<<"state="<<state->get(i)<<endl;
+        ////////cout<<stateNumber<<",tmp="<<tmp<<"i"<<i<<"state="<<state->get(i)<<endl;
         if(tmp)
             nonZeroNum++;
     }
@@ -200,7 +200,7 @@ int  num2bin(StateType stateNumber, int ruleNumber,BoolState * state,int& nonZer
 
 long double model::ruleEVT(int rule, StateType list,bool full)
 {
-    ////cout<<"ruleEVT"<<endl;
+    //////cout<<"ruleEVT"<<endl;
     int ruleNum=flowRuleTable->get_rulenum();
     long double ttlrule=TTL->get(rule);
     long double prob = 0;
@@ -242,7 +242,7 @@ long double model::ruleEVT(int rule, StateType list,bool full)
             }
         }
     }
-    ////cout<<"ruleEVT"<<endl;
+    //////cout<<"ruleEVT"<<endl;
     return prob;
 }
 /*
@@ -307,31 +307,31 @@ long double model::triggerFlowP(int rule,StateType state,bool exist)
     int flag,flg;
     // LISTINT fSet;
     int it;
-    ////cout<<rule<<exit<<endl;
+    //////cout<<rule<<exit<<endl;
     if (exist)
     {
-        //////cout<<"triggerFlowP:yes"<<endl;
+        ////////cout<<"triggerFlowP:yes"<<endl;
         for( int i = 1; i<=flowNum; ++i)
         {
             int rule_prio=flowRuleTable->get(i, rule);
-            //////cout<<"triggerFlowP:yes:rule_prio"<<rule_prio<<endl;
+            ////////cout<<"triggerFlowP:yes:rule_prio"<<rule_prio<<endl;
             if (rule_prio != 0)
             {
                 flag = 0;
-                //////cout<<"triggerFlowP:yes:for"<<rule_prio<<endl;
+                ////////cout<<"triggerFlowP:yes:for"<<rule_prio<<endl;
                 
-                ////cout<<"triggerFlowP:yes"<<i<<","<<it<<endl;
+                //////cout<<"triggerFlowP:yes"<<i<<","<<it<<endl;
                 forAllRinS(it, state)
                 {
-                    //     //cout<<"triggerFlowP:yes"<<i<<","<<it<<endl;
-                    //////cout<<"state *it="<<*it<<endl;
+                    //     ////cout<<"triggerFlowP:yes"<<i<<","<<it<<endl;
+                    ////////cout<<"state *it="<<*it<<endl;
                     if(flowRuleTable->get(i, it) > rule_prio)
                     {
-                        //////cout<<"triggerFlowP:yes:flag=1"<<rule_prio<<endl;
+                        ////////cout<<"triggerFlowP:yes:flag=1"<<rule_prio<<endl;
                         flag = 1;
                         break;
                     }
-                    //   //cout<<"triggerFlowP:yes2"<<endl;
+                    //   ////cout<<"triggerFlowP:yes2"<<endl;
                     
                 }
                 
@@ -339,15 +339,15 @@ long double model::triggerFlowP(int rule,StateType state,bool exist)
                 {
                     //  fSet.push_back(i);
                     lambda +=flowPara->get(i);
-                    ////cout<<"push back"<<i<<endl;
+                    //////cout<<"push back"<<i<<endl;
                 }
             }
         }
-        //////cout<<"triggerFlowP:yes:endfor"<<endl;
+        ////////cout<<"triggerFlowP:yes:endfor"<<endl;
     }
     else
     {
-        // //cout<<"triggerFlowP:no"<<endl;
+        // ////cout<<"triggerFlowP:no"<<endl;
         for (int i=1; i<=flowNum; ++i)
         {
             int rule_prio=flowRuleTable->get(i, rule);
@@ -356,7 +356,7 @@ long double model::triggerFlowP(int rule,StateType state,bool exist)
                 flg = 0;
                 forAllRinS(it, state)
                 {
-                    ////cout<<i<<","<<it<<"flowrul="<<endl;
+                    //////cout<<i<<","<<it<<"flowrul="<<endl;
                     if (flowRuleTable->get(i, it) != 0)
                     {
                         flg = 1;
@@ -379,13 +379,13 @@ long double model::triggerFlowP(int rule,StateType state,bool exist)
                     {
                         lambda +=flowPara->get(i);
                         // fSet.push_back(i);
-                        ////cout<<"else push back"<<i<<endl;
+                        //////cout<<"else push back"<<i<<endl;
                     }
                 }
             }
         }
     }
-    ////cout<<state<<",lambda"<<lambda;
+    //////cout<<state<<",lambda"<<lambda;
     return lambda;
 }
 
@@ -445,20 +445,20 @@ long double model::TTLProb(int rule, StateType state, vector<long double> lambda
             // lambdas[i-1]=lambda;
             if (i == rule){
                 prob *=(1 - poissonNumber0(lambda, 0, unit)) * poissonNumber0(lambda, 0, ttlrule - unit);
-                //     cout<<"prob"<<prob<<endl;
+                //     //cout<<"prob"<<prob<<endl;
             }
             else {
                 if (existi){
                     prob *=(1 - poissonNumber0(lambda, 0, min(ttlrule, TTL->get(i))));
-                    // cout<<"prob"<<prob<<endl;
+                    // //cout<<"prob"<<prob<<endl;
                 }
                 else{
                     prob  *= poissonNumber0(lambda, 0, min(ttlrule, ttlrule));
-                    //  cout<<"prob"<<prob<<endl;
+                    //  //cout<<"prob"<<prob<<endl;
                 }
             }
         }
-        //   cout<<"prob"<<prob<<endl;
+        //   //cout<<"prob"<<prob<<endl;
         if(prob==0)
             return 0;
         int it;
@@ -489,13 +489,13 @@ long double model::TTLProb(int rule, StateType state, vector<long double> lambda
                                     p *=(1 - poissonNumber0(lambda, 0, min(k * unit, TTL->get(j))));
                             }
                         }
-                        ////cout<<ceil0<<"k="<<"lambda"<<lambda<<"p="<<p<<endl;
+                        //////cout<<ceil0<<"k="<<"lambda"<<lambda<<"p="<<p<<endl;
                     }
                     prob += p;
                 }
             }
         }
-        //cout<<"lambdas3"<<endl;
+        ////cout<<"lambdas3"<<endl;
     }else{
         #pragma omp parallel for reduction(*:prob)
         for(int i=1; i<=ruleNum; ++i)
@@ -504,24 +504,24 @@ long double model::TTLProb(int rule, StateType state, vector<long double> lambda
             long double lambda =lambdas[i-1];// triggerFlowP(flowPara, i, flowRuleTable, state,bool_state);
             if (i == rule){
                 prob *=(1 - poissonNumber0(lambda, 0, unit)) * poissonNumber0(lambda, 0, ttlrule - unit);
-                //     cout<<"prob"<<prob<<endl;
+                //     //cout<<"prob"<<prob<<endl;
             }
             else {
                 if (existi){
                     prob *=(1 - poissonNumber0(lambda, 0, TTL->get(i)));
-                    // cout<<"prob"<<prob<<endl;
+                    // //cout<<"prob"<<prob<<endl;
                 }
                 else{
                     prob  *= poissonNumber0(lambda, 0, TTL->get(i));
-                    //  cout<<"prob"<<prob<<endl;
+                    //  //cout<<"prob"<<prob<<endl;
                 }
             }
         }
         
     }
-    ////cout<<"total="<<total<<endl;
+    //////cout<<"total="<<total<<endl;
+    //////cout<<"prob="<<prob<<endl;
     ////cout<<"prob="<<prob<<endl;
-    //cout<<"prob="<<prob<<endl;
     /*  if(prob==0)
      return 0;
      prob /= total;*/
@@ -531,7 +531,7 @@ long double model::TTLProb(int rule, StateType state, vector<long double> lambda
 
 /*void model::matMultiply(TransProb& mat, StateProb2& oldprob)
  {
- ////////cout<<"size"<<mat.size()<<endl;
+ //////////cout<<"size"<<mat.size()<<endl;
  
  StateProb2 newprob;//(oldprob.size(),0);
  long double prob;
@@ -590,7 +590,7 @@ long double unitComputation(floatCounter *flowPara,long double delta,long double
         time+=delta;
         prob=1;
         for (int i=1;i<=flowNum;++i){
-            //cout<<flowPara->get(i);
+            ////cout<<flowPara->get(i);
             prob = prob * poissonNumber0(flowPara->get(i), 0, time);
         }
         sum = prob;
@@ -615,10 +615,10 @@ long double unitComputation(floatCounter *flowPara,long double delta,long double
             
             /*while (rm > time){
                 rm -= time;
-                cout<<"while"<<rm<<endl;
+                //cout<<"while"<<rm<<endl;
             }*/
             if (rm <= (time - limit) && (rm> 0.00001)){
-                //cout<<rm<<"time="<<time<<"tim-limit"<<time-limit<<endl;
+                ////cout<<rm<<"time="<<time<<"tim-limit"<<time-limit<<endl;
                 flag = 0;
             }
         }

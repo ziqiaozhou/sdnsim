@@ -34,9 +34,9 @@ public:
         ruleNum=ruleNum0;
         realsize=ruleNum*sizeof(T);
         //this->setZero();
-        std::cout<<"init"<<std::endl;
+        //std::cout<<"init"<<std::endl;
         counter=(T* )malloc(realsize);
-        //   std:://cout<<"alloc"<<counter<<std::endl;
+        //   std::////cout<<"alloc"<<counter<<std::endl;
         memset(counter,0,realsize);
     }
     /*TCounter(TCounter& t){
@@ -80,16 +80,16 @@ public:
             ruleNum=ruleNum0;
             realsize=ruleNum*sizeof(T);
             //this->setZero();
-            std::cout<<"init"<<std::endl;
+            //std::cout<<"init"<<std::endl;
             counter=(T* )malloc(realsize);
-            //   std:://cout<<"alloc"<<counter<<std::endl;
+            //   std::////cout<<"alloc"<<counter<<std::endl;
             memset(counter,0,realsize);
         }else{
             ruleNum=ruleNum0;
         }
     }
     ~TCounter(){
-        //  std:://cout<<"free"<<counter<<std::endl;
+        //  std::////cout<<"free"<<counter<<std::endl;
         if(counter!=NULL){
             free(counter);
             counter=NULL;
@@ -126,7 +126,7 @@ typedef Eigen::SparseMatrix<long double> TransProb;
  }
  int InTrans(StateType prev,StateType now){
  std::array<StateType,2> index={prev,now};
- ////cout<<"intrans="<<(this->find(index)!=this->end())<<std::endl;
+ //////cout<<"intrans="<<(this->find(index)!=this->end())<<std::endl;
  return (*this)[prev][now]>0;
  }
  };*/
@@ -180,7 +180,7 @@ public:
          }*/
     }
     ~FlowRuleTable(){
-        //std:://cout<<"free"<<std::endl;
+        //std::////cout<<"free"<<std::endl;
         //free(counter);
     }
     inline int& get(int flow,int rule)  {
@@ -398,7 +398,7 @@ public:
     // virtual void num2State(StateType num, int ruleNum, int mSize,LISTINT &state,BoolState& cmp);
     model(floatCounter * flowPara0, FlowRuleTable *flowRuleTable0,
           floatCounter * TTL0, int mSize0, int initialStateNum0, long double interval0, long double unit0, long double delta0){
-        std::cout<<"init model3"<<std::endl;
+        //std::cout<<"init model3"<<std::endl;
         flowPara=flowPara0;
         flowRuleTable=flowRuleTable0;
         TTL=TTL0;
@@ -461,7 +461,7 @@ inline int next_valid_rule(StateType oldState,StateType &numState)  {
         ruleNo++;
     }
     numState=oldState;
-    // std:://cout<<"num"<<numState<<std::endl;
+    // std::////cout<<"num"<<numState<<std::endl;
     return ruleNo;
 };
 

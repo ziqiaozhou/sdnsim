@@ -32,7 +32,7 @@ public:
     };
     void save(std::string path,int& counter);
     int paraGenerate(int flowNum, int ruleNum, long double alpha, float TTLMax, FlowRuleTable & table, floatCounter & flowPara, floatCounter & TTL, int & flowInterest);
-    int generate(int flowNum, int ruleNum, long double alpha, float TTLMax,int interval,int runtimes);
+    int generate(int flowNum, int ruleNum, long double alpha, float TTLMax,double interval,int runtimes);
     void save(std::string path);
     void save_tmp(std::string path);
 };

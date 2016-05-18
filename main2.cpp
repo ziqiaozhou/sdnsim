@@ -23,12 +23,12 @@ int main(void)
 
         for (it = state.begin(); it != state.end(); it++)
         {
-            cout<<*it<<" ";
+            //cout<<*it<<" ";
         }
     }
     else
         {
-            cout<<'empty'<<endl;
+            //cout<<'empty'<<endl;
     }
     return 0;
 }
@@ -77,7 +77,7 @@ LISTINT num2State3(int num, int ruleNum, int mSize)
 
         if (state.size() > mSize)
         {
-            cout<<'larger than cache size!';
+            //cout<<'larger than cache size!';
         }
         return state;
 

@@ -20,9 +20,9 @@ int main(void)
     state = num2State(5, 4, 3);
     for (it = 0; it < state.size(); it++)
     {
-        cout<<state[it]<<" ";
+        //cout<<state[it]<<" ";
     }
-    cout<<endl;
+    //cout<<endl;
     return 0;
 }
 
@@ -69,7 +69,7 @@ LISTINT num2State3(int num, int ruleNum, int mSize)
 
     if (state.size() > mSize)
     {
-        cout<<'larger than cache size!';
+        //cout<<'larger than cache size!';
     }
     return state;
 

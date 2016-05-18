@@ -24,29 +24,29 @@ using namespace std;
 int main()
 {
     StateProb2 test(4);
-    cout<<test;
+    //cout<<test;
     long double pr=0.5;
-    cout<<"factory"<<factorial(13,12)<<endl;
-    // cout<<"entropy="<<(-pr*log(pr)-(1-pr)*log(1-pr))<<endl;
-    ////cout << "Machine Epsilon is: " << numeric_limits<long double>::epsilon() << endl;
-    ////cout<<nChoosek(10, 3)<<endl;
-    ////cout<<poissonNumber(0.5,0,0.025)<<endl;
-    ////cout<<ceilM(1,0.125,0.01)<<endl;
+    //cout<<"factory"<<factorial(13,12)<<endl;
+    // //cout<<"entropy="<<(-pr*log(pr)-(1-pr)*log(1-pr))<<endl;
+    //////cout << "Machine Epsilon is: " << numeric_limits<long double>::epsilon() << endl;
+    //////cout<<nChoosek(10, 3)<<endl;
+    //////cout<<poissonNumber(0.5,0,0.025)<<endl;
+    //////cout<<ceilM(1,0.125,0.01)<<endl;
     int flowNum=4,ruleNum=3;
     int mSize=2;
     StateType initialStateNum=0;
-    long double interval=2;
+    long double interval=1.5;
     long double limit=0.001;
     long double delta=0.001;
-    int target=2;
+    int target=3;
     int qnum=1;
     FlowRuleTable table(flowNum,ruleNum);//flowNUm,ruleNUm
     floatCounter flowPara(flowNum);
     
-    table<<1,0,0,
-    1,2,3,
-    1,2,0,
-    1,0,3;
+    table<<0,1,2,
+    0,1,2,
+    3,1,2,
+    3,1,0;
     
     
     //table.set(1,1,3);
@@ -61,18 +61,18 @@ int main()
     //table.set(5,4,3);
     //int tmp;
     //int rule;
-    //  cout<<table.row(1).maxCoeff(&tmp,&rule)<<"rule="<<rule;
-    flowPara[1]=0.07;
-    flowPara[2]=0.16;
-    flowPara[3]=0.032;
-    flowPara[4]=0.07;
+    //  //cout<<table.row(1).maxCoeff(&tmp,&rule)<<"rule="<<rule;
+    flowPara[1]=0.609;
+    flowPara[2]=0.636;
+    flowPara[3]=0.288;
+    flowPara[4]=0.222;
     //flowPara[4]=0.4;
     //flowPara[5]=0.1;
     //flowPara[4]=0.2;
     floatCounter TTL(ruleNum);
-    TTL[1]=0.1;
-    TTL[2]=0.3;
-    TTL[3]=0.5;
+    TTL[1]=0.3;
+    TTL[2]=0.1;
+    TTL[3]=0.7;
     //TTL[4]=0.5;
     // for(int i=4;i<=ruleNum;++i){
     //     table.set(i,i,1);
@@ -97,38 +97,38 @@ int main()
     /*
      for(int i=4;i<=flowNum;++i)
      flowPara[i]=0.4;*/
-    cout<<table;
-    ////cout<<"table"<<endl;
-    ////cout<<"table"<<endl;
+    //cout<<table;
+    //////cout<<"table"<<endl;
+    //////cout<<"table"<<endl;
     // LISTINT state;
     //LISTINT::iterator it;
-    ////cout<<"nonzero="<<countn<<endl;
-    ////cout<<"num2state2"<<state.empty()<<state.size()<<endl;
+    //////cout<<"nonzero="<<countn<<endl;
+    //////cout<<"num2state2"<<state.empty()<<state.size()<<endl;
     FlowRuleTable *flowRuleTable=&table;
-    //  //cout<<"high prio"<<flowRuleTable->get_high_rule(1);
-    //  cout<<"init TTl"<<endl;
+    //  ////cout<<"high prio"<<flowRuleTable->get_high_rule(1);
+    //  //cout<<"init TTl"<<endl;
     //TTL<<1,1,1;
     /*  for(int i=1;i<=ruleNum;++i){
      TTL[i]=1;
      }*/
-    //   cout<<"init TTl"<<endl;
-    //  cout<<TTL;
-    //cout<<*flowRuleTable;
-    //cout<<flowPara;
-    //   cout<<"init TTl"<<endl;
+    //   //cout<<"init TTl"<<endl;
+    //  //cout<<TTL;
+    ////cout<<*flowRuleTable;
+    ////cout<<flowPara;
+    //   //cout<<"init TTl"<<endl;
     long double unit=unitComputation(&flowPara, delta, limit, &TTL);
    
-    //  cout<<"init unit"<<endl;
+    //  //cout<<"init unit"<<endl;
     
     
-    //  cout<<"init unit"<<endl;
-    cout<<"unit="<<unit<<endl;
+    //  //cout<<"init unit"<<endl;
+    //cout<<"unit="<<unit<<endl;
 #if 0
     model3 model(&flowPara,flowRuleTable,&TTL,mSize,initialStateNum,interval,unit,delta);
-    //cout<<"end"<<endl;
+    ////cout<<"end"<<endl;
     
     //model.run();
-    //cout<<"end"<<endl;
+    ////cout<<"end"<<endl;
     StateProb2 stateprob=model.getStateProb();
     // int stateid=0;
     //char* c=(char *)malloc(10);
@@ -141,35 +141,35 @@ int main()
     VecD IG;
 #if 1
     Attacker attacker(&flowPara,flowRuleTable,&TTL,mSize,initialStateNum,interval,unit,delta);
-    cout<<"attack"<<endl;
-    cout<<"run1"<<endl;
+    ////cout<<"attack"<<endl;
+    ////cout<<"run1"<<endl;
     attacker.run(qnum,target,initialStateNum,attackFlow,PrXQ,IG);
-    cout<<IG<<endl;
-    cout<<PrXQ<<endl;
+    ////cout<<IG<<endl;
+    ////cout<<PrXQ<<endl;
     /*  for(int i=0;i<PrXQ->size();++i){
      for(int j=0;j<(*PrXQ)[i].size();++j){
-     cout<<i<<","<<j<<"="<<(*PrXQ)[i][j]<<endl;
+     //cout<<i<<","<<j<<"="<<(*PrXQ)[i][j]<<endl;
      }
      }*/
     StateProb2 stateprob=attacker.getStateProb();
-    cout<<attacker.get_nrule()<<endl;
-    // cout<<factorial(13)<<endl;;
-    //cout<<factorial(12)<<endl;;
-    cout<<(factorial(13)/factorial(12))<<endl;
-    cout<<"flownum="<<attacker.flowRuleTable->get_flownum()<<endl;
-    cout<<"flownum="<<attacker.queryNum<<endl;
-    // cout<<"prob state="<<endl;
-    // cout<<stateprob;
+    //cout<<attacker.get_nrule()<<endl;
+    // //cout<<factorial(13)<<endl;;
+    ////cout<<factorial(12)<<endl;;
+  //  //cout<<(factorial(13)/factorial(12))<<endl;
+ //   //cout<<"flownum="<<attacker.flowRuleTable->get_flownum()<<endl;
+  //  //cout<<"flownum="<<attacker.queryNum<<endl;
+    // //cout<<"prob state="<<endl;
+    // //cout<<stateprob;
     // int stateid=0;
     /* for(int i=0;i<attacker.stateNum;++i){
-     cout<<i<<attacker.legalState[i]<<endl;
+     //cout<<i<<attacker.legalState[i]<<endl;
      }*/
 #endif
     // Automatic a(&flowPara,flowRuleTable,&TTL,mSize,initialStateNum,interval,unit,delta);
     
     // int interestflow=a.generate();
     /*
-     cout<<attacker.total_time<<endl;
+     //cout<<attacker.total_time<<endl;
      vector<long double> lambdas(ruleNum);
      StateType newList=5;
      for(int i=1; i<=ruleNum; ++i)
@@ -180,10 +180,10 @@ int main()
      
      }
      
-     cout<<"ceil"<<ceilM(1, unit, delta)<<endl;
-     cout<<attacker.TTLStateProb(5,lambdas);*/
-    // //cout<<"triger flowp"<<triggerFlowP(flowPara, 2, flowRuleTable, oldList,bool_oldList);
-    ////cout<<"maxv=ceilM(TTL[rule], unit, delta)"<<ceilM(TTL[1], unit, delta)<<endl;
+     //cout<<"ceil"<<ceilM(1, unit, delta)<<endl;
+     //cout<<attacker.TTLStateProb(5,lambdas);*/
+    // ////cout<<"triger flowp"<<triggerFlowP(flowPara, 2, flowRuleTable, oldList,bool_oldList);
+    //////cout<<"maxv=ceilM(TTL[rule], unit, delta)"<<ceilM(TTL[1], unit, delta)<<endl;
     return 0;
 }
 

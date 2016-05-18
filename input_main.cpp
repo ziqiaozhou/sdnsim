@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 {
     
     StateProb2 test(4);
-    cout<<test;
+    //cout<<test;
     long double pr=0.5;
     int flowNum=4,ruleNum=3;
     int mSize=1;
@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
     FlowRuleTable table(flowNum,ruleNum);//flowNUm,ruleNUm
     floatCounter flowPara(flowNum);
     floatCounter TTL(ruleNum);
+    
     long double unit=0;//=unitComputation(&flowPara, delta, limit, &TTL);
      Automatic a(label,&flowPara,&table,&TTL,mSize,initialStateNum,interval,unit,delta);
     

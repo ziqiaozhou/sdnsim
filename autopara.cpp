@@ -64,6 +64,7 @@ int Automatic::paraGenerate(int nFlow0, int nRule0, long double alpha, float TTL
     default_random_engine generator (seed);
     uniform_real_distribution<long double> distDouble (0.0,1.0);
     uniform_int_distribution<int> distInt(1, TTLRange);
+    uniform_int_distribution<int> distIntFP(1, 1000);
     FlowRuleTable oldSeq(2, nRule);
     // flowRuleTable newSeq(2, nRule);
     FlowRuleTable newPro(2, nRule);
@@ -83,7 +84,7 @@ int Automatic::paraGenerate(int nFlow0, int nRule0, long double alpha, float TTL
                     table.set(i,j,j);
                 }
             }
-            flowPara[i] =(long double)((rand()%1000))/1000 ;
+            flowPara[i] =(long double)(distIntFP(generator))/1000 ;
         }
         flag = 1;
         for (int j = 1; j<=nRule; ++j)
@@ -185,13 +186,13 @@ int Automatic::paraGenerate(int nFlow0, int nRule0, long double alpha, float TTL
         {
             flag = 0;
             goto retry;
-            // cout<<"len==0"<<endl;
-            //cout<<table<<endl;
+            // //cout<<"len==0"<<endl;
+            ////cout<<table<<endl;
         }
-        //cout<<"rubn"<<endl;
+        ////cout<<"rubn"<<endl;
     }
     *flowRuleTable=table;
-    // cout<<"rubn"<<endl;
+    // //cout<<"rubn"<<endl;
     int rd = ceil(distDouble(generator) * posLen);
     flowInterest = posSet.get(1,rd);
     
@@ -207,7 +208,7 @@ int Automatic::paraGenerate(int nFlow0, int nRule0, long double alpha, float TTL
         mSize = 1;
     }
     return flowInterest;
-    // cout<<"rubn finish"<<endl;
+    // //cout<<"rubn finish"<<endl;
     
 }
 
@@ -298,7 +299,7 @@ void Automatic::save(string path,int& counter){
     myfile.close();
 }
 
-int Automatic::generate(int flowNum, int ruleNum, long double alpha, float TTLMax0,int interval0,int runTimes){
+int Automatic::generate(int flowNum, int ruleNum, long double alpha, float TTLMax0,double interval0,int runTimes){
     //vector<> resultV = zeros(1,12);
     interval=interval0;
     nFlow = flowNum;
@@ -315,24 +316,27 @@ int Automatic::generate(int flowNum, int ruleNum, long double alpha, float TTLMa
     int counter=0;
     delta = 0.001;
     limit = 0.001;
+    int i=0;
     //  long double interval = 1.5;
     // int maxm = 10000;
-    for(int i=0;i<runTimes;++i){
+    while (i<runTimes){
         int tmp=paraGenerate(nFlow, nRule, alpha, TTLmax,*flowRuleTable,*flowPara, *TTL,flowInterest);
-        cout<<"generated"<<endl;
-        /*   cout<<*flowRuleTable<<endl;
+        ////cout<<"generated"<<endl;
+        /*   //cout<<*flowRuleTable<<endl;
          for(int i=0;i<nRule;i++)
-         cout<<(*TTL)[i+1]<<" ";
-         cout<<endl;
+         //cout<<(*TTL)[i+1]<<" ";
+         //cout<<endl;
          for(int i=0;i<nFlow;i++){
-         cout<<(*flowPara)[i+1]<<" ";
+         //cout<<(*flowPara)[i+1]<<" ";
          }
-         cout<<flowInterest<<endl;*/
+         //cout<<flowInterest<<endl;*/
         target=flowInterest;
         attackFlow.empty();
         updated=true;
         
         run(qNum,target,initialStateNum,attackFlow,PrXQ,IG);
+       // //cout<<"FP:"<<flowProb<<endl;
+       // //cout<<"Trans:"<<Trans<<endl;
         bool record_case=false;
         //save("/Users/ziqiaozhou/GoogleDrive/sdncode/database");
         switch (caseType) {
@@ -356,9 +360,12 @@ int Automatic::generate(int flowNum, int ruleNum, long double alpha, float TTLMa
                     }
                 }
                 if(record_case)
-                    save("../data/");
+                   { save("../data/");
+                    i = i + 1; }
                 else
+                {
                     save_tmp("../tmp/");
+                    i = i + 1;}
             }
                 break;
         }

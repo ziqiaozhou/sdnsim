@@ -30,7 +30,7 @@ public:
         StateType stateNum = 1;
         ttlPNum=1;
         maxTrans=0;
-        std::cout<<"resize"<<std::endl;
+        //std::cout<<"resize"<<std::endl;
         int times=(mSize<ruleNum)?mSize:ruleNum;
         baseNum[0]=nChoosek(ruleNum,0);
         baseNum[1]=baseNum[0]+nChoosek(ruleNum,1);
@@ -41,7 +41,7 @@ public:
             maxTrans+=tmp*ruleNum*nChoosek(i, 2);
         }
         baseFullState=stateNum-nChoosek(nRule,mSize);
-        //cout<<"base full"<<baseFullState;
+        ////cout<<"base full"<<baseFullState;
         fullNum=(stateNum-baseFullState);
         return stateNum;
     }
@@ -65,7 +65,7 @@ public:
         stateNum=0;
         total_time=0;
         caseType=CASE_COMMON;
-        std::cout<<"init model3"<<std::endl;
+        //std::cout<<"init model3"<<std::endl;
         fn = ceilM(interval, unit, delta);
         //#pragma omp parallel for
         StateType all=1<<nRule;
@@ -88,7 +88,7 @@ public:
        // ttlProbTable.reserve(ttlPNum);
       //  ttlProbTable.setZero();
         //    init_triggerFlowP();
-        std::cout<<"maxTrans"<<maxTrans<<std::endl;
+        //std::cout<<"maxTrans"<<maxTrans<<std::endl;
     };
     StateProb2& getStateProb(){
         return stateProb;
