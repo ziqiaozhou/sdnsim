@@ -10,5 +10,5 @@ add_executable(test input_main.cpp autopara.cpp model3.cpp sdnsim.cpp attacker.c
 #add_library(test3 STATIC)
 set(CMAKE_BUILD_TYPE Release)
 include_directories(../eigen3/)
-SET(CMAKE_CXX_FLAGS "-O3")
+SET(CMAKE_CXX_FLAGS "-O0")
 SET( CMAKE_CXX_FLAGS  "-fopenmp ${CMAKE_CXX_FLAGS} -std=gnu++0x")
