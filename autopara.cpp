@@ -21,7 +21,6 @@
 #include <string>
 # define TTLRange 10
 # define beta 0.5
-# define Interval 1.5
 
 using namespace std;
 struct RulePrioSorter{
@@ -54,15 +53,16 @@ void sortM(FlowRuleTable *oldMat)
 };
 
 RulePrioSorter rulePrioSorter;
-int Automatic::paraGenerate(int nFlow0, int nRule0, double alpha, float TTLMax, FlowRuleTable & table, floatCounter & flowPara, floatCounter & TTL, int & flowInterest){
+int Automatic::paraGenerate(int nFlow0, int nRule0, long double alpha, float TTLMax, FlowRuleTable & table, floatCounter & flowPara, floatCounter & TTL, int & flowInterest){
     
     int flag = 0;
     int matchNum, maxRule, flag2;
     nFlow=nFlow0;
-    nRule0=nRule;
+    nRule=nRule0;
+    srand (time(NULL));
     unsigned seed = chrono::system_clock::now().time_since_epoch().count();
     default_random_engine generator (seed);
-    uniform_real_distribution<double> distDouble (0.0,1.0);
+    uniform_real_distribution<long double> distDouble (0.0,1.0);
     uniform_int_distribution<int> distInt(1, TTLRange);
     FlowRuleTable oldSeq(2, nRule);
     // flowRuleTable newSeq(2, nRule);
@@ -82,9 +82,8 @@ int Automatic::paraGenerate(int nFlow0, int nRule0, double alpha, float TTLMax, 
                 {
                     table.set(i,j,j);
                 }
-                
             }
-            flowPara[i] = distDouble(generator);
+            flowPara[i] =(long double)((rand()%1000))/1000 ;
         }
         flag = 1;
         for (int j = 1; j<=nRule; ++j)
@@ -248,7 +247,7 @@ void Automatic::save_tmp(string path){
     //label2=chrono::system_clock::now().time_since_epoch().count();
     ofstream myfile;
     myfile.open(path+"/"+to_string(nFlow)+"_"+to_string(nRule)+"para"+label+"_"+to_string(tmp_times)+".txt");
-    myfile<<nFlow<<"\t"<<nRule<<"\t"<<mSize<<"\t"<<TTLmax<<endl;
+    myfile<<nFlow<<"\t"<<nRule<<"\t"<<unit<<"\t"<<mSize<<"\t"<<TTLmax<<endl;
     myfile<<(*flowRuleTable);
     myfile<<endl;
     for(int i=0;i<nRule;i++)
@@ -271,22 +270,53 @@ void Automatic::save_tmp(string path){
     
     myfile.close();
 }
+void Automatic::save(string path,int& counter){
+    counter++;
+    //label2=chrono::system_clock::now().time_since_epoch().count();
+    ofstream myfile;
+    myfile.open(path+"/"+to_string(nFlow)+"_"+to_string(nRule)+"para"+label+"_"+to_string(counter)+".txt");
+    myfile<<nFlow<<"\t"<<nRule<<"\t"<<unit<<"\t"<<mSize<<"\t"<<TTLmax<<endl;
+    myfile<<(*flowRuleTable);
+    myfile<<endl;
+    for(int i=0;i<nRule;i++)
+        myfile<<TTL->get(i+1)<<"\t";
+    myfile<<endl;
+    for(int i=0;i<nFlow;i++)
+        myfile<<flowPara->get(i+1)<<"\t";
+    myfile<<endl<<"------target--------\n";
+    myfile<<target<<endl;
+    myfile<<"------result--------\n";
+    for(std::set<set<int>>::iterator oneset=attackFlow.begin(); oneset!=attackFlow.end(); ++oneset){
+        for(std::set<int>::iterator it=oneset->begin(); it!=oneset->end(); ++it){
+            myfile<<*it<<"\t";
+        }
+        myfile<<endl;
+    }
+    myfile<<"------details--------\n";
+    myfile<<PrXQ.transpose()<<endl;
+    myfile<<IG.transpose()<<endl;
+    myfile.close();
+}
 
-int Automatic::generate(int flowNum, int ruleNum, double alpha, float TTLMax0,int interval0,int runTimes){
+int Automatic::generate(int flowNum, int ruleNum, long double alpha, float TTLMax0,int interval0,int runTimes){
     //vector<> resultV = zeros(1,12);
     interval=interval0;
     nFlow = flowNum;
     nRule = ruleNum;
     TTLmax=TTLMax0;
     flowRuleTable->resize(nFlow, nRule);
+    flowRuleTable->setZero();
     flowPara->resize(nFlow);
+    flowPara->reset();
     TTL->resize(nRule);
+    TTL->reset();
     int flowInterest;
     qNum=1;
-    double delta = 0.001;
-    double limit = 0.001;
-    //  double interval = 1.5;
-    int maxm = 10000;
+    int counter=0;
+    delta = 0.001;
+    limit = 0.001;
+    //  long double interval = 1.5;
+    // int maxm = 10000;
     for(int i=0;i<runTimes;++i){
         int tmp=paraGenerate(nFlow, nRule, alpha, TTLmax,*flowRuleTable,*flowPara, *TTL,flowInterest);
         cout<<"generated"<<endl;
@@ -301,27 +331,37 @@ int Automatic::generate(int flowNum, int ruleNum, double alpha, float TTLMax0,in
         target=flowInterest;
         attackFlow.empty();
         updated=true;
+        
         run(qNum,target,initialStateNum,attackFlow,PrXQ,IG);
         bool record_case=false;
         //save("/Users/ziqiaozhou/GoogleDrive/sdncode/database");
-        for(std::set<set<int>>::iterator oneset=attackFlow.begin(); oneset!=attackFlow.end(); ++oneset){
-            if(oneset->count(target)>0){
-                record_case=false;
+        switch (caseType) {
+            case CASE_SPECIAL:
+                save("../special/",counter);
                 break;
-            }
-            for(std::set<int>::iterator it=oneset->begin(); it!=oneset->end(); ++it){
-                if (PrXQ((*it)-1,0)>0.5 && PrXQ((*it)-1,1)<0.5) {
-                    record_case=true;
-                    choose=*it;
-                    break;
+            default:
+            {
+                
+                for(std::set<set<int>>::iterator oneset=attackFlow.begin(); oneset!=attackFlow.end(); ++oneset){
+                    if(oneset->count(target)>0){
+                        record_case=false;
+                        break;
+                    }
+                    for(std::set<int>::iterator it=oneset->begin(); it!=oneset->end(); ++it){
+                        if (PrXQ((*it)-1,0)>0.5 && PrXQ((*it)-1,1)<0.5) {
+                            record_case=true;
+                            choose=*it;
+                            break;
+                        }
+                    }
                 }
+                if(record_case)
+                    save("../data/");
+                else
+                    save_tmp("../tmp/");
             }
+                break;
         }
-        if(record_case)
-            save("../data/");
-        else
-            save_tmp("../tmp/");
-        
     }
     return 0;
     //return flowInterest;

@@ -58,8 +58,8 @@ set<int> bin2SetAttack(int num, int flowNum,int qNum){
 }
 
 
-double Attacker::flowProbCompute3M(StateProb2& stateProb0,set<int>& queryInterest,int queryResult){
-    double queryProb = 0;
+long double Attacker::flowProbCompute3M(StateProb2& stateProb0,set<int>& queryInterest,int queryResult){
+    long double queryProb = 0;
     StateType r = 0;
     //for(size_t i=0,row=stateProb0.rows();i<row;++i){
     for (StateProb2::InnerIterator it(stateProb0); it; ++it) {
@@ -87,9 +87,9 @@ double Attacker::flowProbCompute3M(StateProb2& stateProb0,set<int>& queryInteres
 
 void Attacker::conditionalEntropyComputeM3(int flowInterest,int initialStateNum,VecD &conditionalEntropyQ,MatD&PrXQ){
     int valueNum = pow(2,qNum);
-    //  double ** PrQ=(double **)malloc(sizeof(double *)*queryNum);
+    //  long double ** PrQ=(long double **)malloc(sizeof(long double *)*queryNum);
     //for(int i=0;i<valueNum;++i){
-    //  PrQ[i]=(double *)malloc(sizeof(double *)*valueNum);
+    //  PrQ[i]=(long double *)malloc(sizeof(long double *)*valueNum);
     //}
     StateProb2 stateProbI(stateNum);
     stateProbI.reserve(stateNum);
@@ -126,13 +126,13 @@ void Attacker::conditionalEntropyComputeM3(int flowInterest,int initialStateNum,
         stateProbA=TransA*stateProbA;
     }
     cout<<"multiply\n";
-    double PrQ;
+    long double PrQ;
     conditionalEntropyQ.setZero();
 #pragma omp parallel for
     for (StateType i=0;i<queryNum;++i){
         set<int> state=bin2SetAttack(i,nFlow,qNum);
         for(int j=0;j<valueNum;++j){
-            double PrQ=flowProbCompute3M(stateProbI, state, j);
+            long double PrQ=flowProbCompute3M(stateProbI, state, j);
             if (PrQ > 0){
                 PrXQ(i,j)=flowProbCompute3M(stateProbA, state, j)/PrQ;
                 conditionalEntropyQ(i)+=(PrQ*entropy(PrXQ(i,j)));
@@ -144,23 +144,26 @@ void Attacker::conditionalEntropyComputeM3(int flowInterest,int initialStateNum,
 
 void Attacker::run(int qNum0,int flowInterest,StateType initialStateNum,set<set<int>>&attackFlow, MatD &PrXQ,VecD &IG){
     init();
+    unit=unitComputation(flowPara, delta, limit, TTL);
+    cout<<"out unit is"<<unit<<endl;
     updated=true;
     cout<<"run1";
-    double pr = pow((1 - flowProb[flowInterest]), fn);
+    long double pr = pow((1 - flowProb[flowInterest]), fn);
     /* for (int i=0;i<nFlow+1; ++i) {
      cout<<"flowprob="<<flowProb[i]<<endl;
      }*/
-    double entropyQ = entropy(pr);
-    double maxm = 0;
+    long double entropyQ = entropy(pr);
+    long double maxm = 0;
     qNum=qNum0;
     
-    int flowNum=flowRuleTable->get_flownum();
+    int flowNum=nFlow;
     queryNum=((qNum > 0) && (flowNum >= qNum))?(factorial(flowNum,flowNum - qNum)):0;
     
     int valueNum = 1<<qNum;
-    VecD conditionalEntropyQ(queryNum);//=(double *)zmalloc(sizeof(double)*queryNum);
+    VecD conditionalEntropyQ(queryNum);//=(long double *)zmalloc(sizeof(long double)*queryNum);
     conditionalEntropyQ.setZero();
     PrXQ.resize(queryNum, valueNum);
+    PrXQ.setZero();
     IG.resize(queryNum);
     IG.setOnes();
     conditionalEntropyComputeM3(flowInterest, initialStateNum,conditionalEntropyQ,PrXQ);
@@ -184,6 +187,8 @@ void Attacker::run(int qNum0,int flowInterest,StateType initialStateNum,set<set<
             }
         }
     }
+    cout<<IG<<endl;
+    cout<<Trans<<endl;
     /*for(std::set<int>::iterator it=attackFlow.begin(); it!=attackFlow.end(); ++it){
      cout<<"choose"<<*it<<endl;
      }

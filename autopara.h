@@ -25,13 +25,14 @@ public:
     std::string label;
     std::set<std::set<int>>attackFlow;
     VecD IG;
-    Automatic(std::string label0,floatCounter * flowPara, FlowRuleTable *flowRuleTable, floatCounter * TTL, int mSize, int initialStateNum, double interval, double unit, double delta):Attacker(flowPara,flowRuleTable,TTL,mSize,initialStateNum,interval,unit,delta){
+    Automatic(std::string label0,floatCounter * flowPara, FlowRuleTable *flowRuleTable, floatCounter * TTL, int mSize, int initialStateNum, long double interval, long double unit, long double delta):Attacker(flowPara,flowRuleTable,TTL,mSize,initialStateNum,interval,unit,delta){
          times=0;
          label=label0;
         tmp_times=0;
     };
-    int paraGenerate(int flowNum, int ruleNum, double alpha, float TTLMax, FlowRuleTable & table, floatCounter & flowPara, floatCounter & TTL, int & flowInterest);
-    int generate(int flowNum, int ruleNum, double alpha, float TTLMax,int interval,int runtimes);
+    void save(std::string path,int& counter);
+    int paraGenerate(int flowNum, int ruleNum, long double alpha, float TTLMax, FlowRuleTable & table, floatCounter & flowPara, floatCounter & TTL, int & flowInterest);
+    int generate(int flowNum, int ruleNum, long double alpha, float TTLMax,int interval,int runtimes);
     void save(std::string path);
     void save_tmp(std::string path);
 };

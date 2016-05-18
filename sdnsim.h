@@ -12,7 +12,7 @@
 #include <Eigen/Eigen>
 typedef int stateNumType;
 typedef unsigned long long StateType;
-typedef double probType;
+typedef long double probType;
 typedef int RuleType;
 typedef std::list<RuleType> LISTINT;
 typedef std::list<probType> LISTFLOAT;
@@ -57,6 +57,9 @@ public:
     inline  T & get(int rule)  {
         return counter[rule-1];
     }
+    inline  const T  get_value(int rule)  {
+        return counter[rule-1];
+    }
     int size(){
         return ruleNum;
     }
@@ -96,7 +99,7 @@ public:
 
 typedef  TCounter<bool> BoolState;
 typedef  TCounter<stateNumType> IntState;
-typedef TCounter<double> floatCounter;
+typedef TCounter<long double> floatCounter;
 
 class arrayHash {
 public:
@@ -106,18 +109,18 @@ public:
         return sum;
     }
 };
-typedef Eigen::SparseMatrix<double> TransProb;
-//class TransProb : public std::unordered_map<std::array<StateType,2>,double,arrayHash>{
-/*class TransProb: public std::vector<std::vector<double>>{
- //class TransProb : public std::deque<std::deque<double,arrayHash>>{
+typedef Eigen::SparseMatrix<long double> TransProb;
+//class TransProb : public std::unordered_map<std::array<StateType,2>,long double,arrayHash>{
+/*class TransProb: public std::vector<std::vector<long double>>{
+ //class TransProb : public std::deque<std::deque<long double,arrayHash>>{
  public:
  TransProb (){
  }
- inline void set(StateType prev,StateType now,double prob){
+ inline void set(StateType prev,StateType now,long double prob){
  // std::array<StateType,2> key={prev,now};
  (*this)[prev][now]=prob;
  }
- inline double& get(StateType prev,StateType now){
+ inline long double& get(StateType prev,StateType now){
  //  std::array<StateType,2> key={prev,now};
  return (*this)[prev][now];
  }
@@ -127,8 +130,8 @@ typedef Eigen::SparseMatrix<double> TransProb;
  return (*this)[prev][now]>0;
  }
  };*/
-//typedef Eigen::MatrixXd::Matrix<double, Dynamic, Dynamic> MatrixXd;
-//class TransProb : public Eigen::MatrixXd::Matrix<double, Dynamic, Dynamic>{
+//typedef Eigen::MatrixXd::Matrix<long double, Dynamic, Dynamic> MatrixXd;
+//class TransProb : public Eigen::MatrixXd::Matrix<long double, Dynamic, Dynamic>{
 //}
 
 
@@ -136,22 +139,22 @@ typedef Eigen::SparseMatrix<double> TransProb;
 class intfloat{
 public:
     int state;
-    double prob;
-    intfloat(int s,double p){
+    long double prob;
+    intfloat(int s,long double p){
         state=s;
         prob=p;
     }
     
 };
-typedef Eigen::SparseVector<double> StateProb2;
-//clas StateProb2s//: public  std::unordered_map<StateType,double>{
-/*class StateProb2:public std::vector<double>{
+typedef Eigen::SparseVector<long double> StateProb2;
+//clas StateProb2s//: public  std::unordered_map<StateType,long double>{
+/*class StateProb2:public std::vector<long double>{
  public:
  //std::unordered_map<StateType,StateType>
  void resize(int nstate){
  this->resize(nstate);
  };
- void inline push_back(StateType s,double p){
+ void inline push_back(StateType s,long double p){
  this->at(s)=p;
  }
  };*/
@@ -209,14 +212,14 @@ public:
 };
 
 class SeqFlow{
-    double seq;
+    long double seq;
     int flow;
 public:
-    SeqFlow(double s,int f){
+    SeqFlow(long double s,int f){
         seq=s;
         flow=f;
     }
-    double get_seq() const{
+    long double get_seq() const{
         return seq;
     }
     int get_flow(){
@@ -289,8 +292,8 @@ inline bool ifContain(T element, std::list<T> all)  {
 };
 
 //bool ifInTrans(int prev,int now, TransProb& mat,TransProb::iterator &it);
-//void combineSeq(std::list<SeqFlow>& seqflow,std::list<double> seq2,int flow);
-inline int ceilM(double TTL,double unit,double delta)
+//void combineSeq(std::list<SeqFlow>& seqflow,std::list<long double> seq2,int flow);
+inline int ceilM(long double TTL,long double unit,long double delta)
 {
     return ceil(TTL/unit);
 }
@@ -305,12 +308,12 @@ public:
     int nRule;
     int nFlow;
     int initialStateNum;
-    double interval;
-    double unit;
-    double delta;
+    long double interval;
+    long double unit;
+    long double delta;
     int fn;
     TransProb Trans;
-    double limit;
+    long double limit;
     std::deque<StateType>legalState;
     StateType stateNum;
     
@@ -362,7 +365,7 @@ public:
     inline bool exist_bit(StateType u,int b)  {
         return (u&(1<<(b-1)));
     }
-    double ruleEVT(int rule, StateType list,bool full);
+    long double ruleEVT(int rule, StateType list,bool full);
     inline int  nonZeroNum(StateType stateNum)
     {
         int count=0;
@@ -390,11 +393,11 @@ public:
     int doesMatch(int flow,StateType stateNum);
     // virtual int state2Num(LISTINT &state, int ruleNum,int  mSize);
     StateType stateNumCompute(int ruleNum,int mSize);
-    double triggerFlowP(int rule,StateType state,bool exit);
-    double TTLProb(int rule, StateType state, std::vector<double> lambdas);
+    long double triggerFlowP(int rule,StateType state,bool exit);
+    long double TTLProb(int rule, StateType state, std::vector<long double> lambdas);
     // virtual void num2State(StateType num, int ruleNum, int mSize,LISTINT &state,BoolState& cmp);
     model(floatCounter * flowPara0, FlowRuleTable *flowRuleTable0,
-          floatCounter * TTL0, int mSize0, int initialStateNum0, double interval0, double unit0, double delta0){
+          floatCounter * TTL0, int mSize0, int initialStateNum0, long double interval0, long double unit0, long double delta0){
         std::cout<<"init model3"<<std::endl;
         flowPara=flowPara0;
         flowRuleTable=flowRuleTable0;
@@ -407,8 +410,6 @@ public:
         delta=delta0;
         nRule=flowRuleTable->get_rulenum();
         nFlow=flowRuleTable->get_flownum();
-        fn = ceilM(interval, unit, delta);
-        
         
     };
     
@@ -466,25 +467,25 @@ inline int next_valid_rule(StateType oldState,StateType &numState)  {
 
 int nonZeroNum(LISTINT state);
 //int  num2bin(StateType stateNumber, int ruleNumber,BoolState * state,int& nonZeroNum);
-//double poissonNumber(double lambda, int number,double interval);
+//long double poissonNumber(long double lambda, int number,long double interval);
 //void cacheLRU(int flow, LISTINT& oldList,LISTINT& newList, int mSize, FlowRuleTable* flowRuleTable,LISTINT::iterator& match_pos);
-//double triggerFlowP(floatCounter& flowPara,int rule,FlowRuleTable* flowRuleTable, LISTINT& state,BoolState & bool_state);
-//double ruleEVT(int rule, LISTINT list,BoolState &bool_list,FlowRuleTable* flowRuleTable,
-//            int mSize, floatCounter& flowPara, floatCounter&TTL, double unit,double delta);
+//long double triggerFlowP(floatCounter& flowPara,int rule,FlowRuleTable* flowRuleTable, LISTINT& state,BoolState & bool_state);
+//long double ruleEVT(int rule, LISTINT list,BoolState &bool_list,FlowRuleTable* flowRuleTable,
+//            int mSize, floatCounter& flowPara, floatCounter&TTL, long double unit,long double delta);
 //void probNormalization(StateProb2& midStateProb);
 //void matMultiply(TransProb&  mat, StateProb2& oldprob);
-//double TTLProb(int rule, LISTINT state,BoolState & bool_state,FlowRuleTable* flowRuleTable,
-//  floatCounter & TTL,int mSize,floatCounter& flowPara,double unit,double interval,double delta);
-double unitComputation(floatCounter *flowPara,double delta,double limit, floatCounter *TTL);
-inline double poissonNumber(double lambda, int number,double interval)
+//long double TTLProb(int rule, LISTINT state,BoolState & bool_state,FlowRuleTable* flowRuleTable,
+//  floatCounter & TTL,int mSize,floatCounter& flowPara,long double unit,long double interval,long double delta);
+long double unitComputation(floatCounter *flowPara,long double delta,long double limit, floatCounter *TTL);
+inline long double poissonNumber(long double lambda, int number,long double interval)
 {
     return (pow(lambda*interval,number)/factorial(number))*exp(-lambda*interval);
 };
-inline double poissonNumber0(double lambda, int number,double interval)
+inline long double poissonNumber0(long double lambda, int number,long double interval)
 {
     return (exp(-lambda*interval));
 };
-inline double poissonNumber1(double lambda, int number,double interval)
+inline long double poissonNumber1(long double lambda, int number,long double interval)
 {
     return lambda*interval*(exp(-lambda*interval));
 };

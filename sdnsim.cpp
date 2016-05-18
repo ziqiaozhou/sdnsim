@@ -11,7 +11,7 @@
 using namespace std;
 
 struct SeqFlowSorter seqflowSorter;
-void combineSeq(list<SeqFlow>& seqflow,list<double> seq2,int flow)
+void combineSeq(list<SeqFlow>& seqflow,list<long double> seq2,int flow)
 {
     for(LISTFLOAT::iterator it=seq2.begin();it!=seq2.end();it++)
     {
@@ -198,12 +198,12 @@ int  num2bin(StateType stateNumber, int ruleNumber,BoolState * state,int& nonZer
  
  end*/
 
-double model::ruleEVT(int rule, StateType list,bool full)
+long double model::ruleEVT(int rule, StateType list,bool full)
 {
     ////cout<<"ruleEVT"<<endl;
     int ruleNum=flowRuleTable->get_rulenum();
-    double ttlrule=TTL->get(rule);
-    double prob = 0;
+    long double ttlrule=TTL->get(rule);
+    long double prob = 0;
     if (!exist_bit(list,rule ))
         cerr<< "rule does not exist!";
     else
@@ -217,11 +217,11 @@ double model::ruleEVT(int rule, StateType list,bool full)
 #pragma omp parallel for  reduction(+:prob)
             for (int k = mSize; k<=maxv; ++k)
             {
-                double p = 1;
+                long double p = 1;
                 for(int i = 1; i<=ruleNum; ++i)
                 {
                     bool exist=exist_bit(list,i);
-                    double rPara = triggerFlowP( i, list,exist);
+                    long double rPara = triggerFlowP( i, list,exist);
                     if (!exist)
                     {
                         p = p*poissonNumber0(rPara, 0, min(k*unit, TTL->get(i)));
@@ -298,12 +298,12 @@ double model::ruleEVT(int rule, StateType list,bool full)
  end
  
  end*/
-double model::triggerFlowP(int rule,StateType state,bool exist)
+long double model::triggerFlowP(int rule,StateType state,bool exist)
 {
     
     int flowNum=flowRuleTable->get_flownum();
     int ruleNum=flowRuleTable->get_rulenum();
-    double lambda=0;
+    long double lambda=0;
     int flag,flg;
     // LISTINT fSet;
     int it;
@@ -392,7 +392,7 @@ double model::triggerFlowP(int rule,StateType state,bool exist)
 
 /*void probNormalization(StateProb2& midStateProb)
  {
- double sum=0;
+ long double sum=0;
  // for(int i=0)
  for(size_t i=0;i<midStateProb.size();++i)
  {
@@ -410,20 +410,20 @@ double model::triggerFlowP(int rule,StateType state,bool exist)
  }
  }*/
 
-double model::TTLProb(int rule, StateType state, vector<double> lambdas)
+long double model::TTLProb(int rule, StateType state, vector<long double> lambdas)
 {
     int ruleNum=nRule;
-    double prob;
-    double total;
+    long double prob;
+    long double total;
     int statesize=nonZeroNum(state);
     bool full=(statesize==mSize);
-    double ttlrule=TTL->get(rule);
+    long double ttlrule=TTL->get(rule);
     if (interval < ttlrule)
     {
         prob = 0;
         return prob;
     }
-    double maxt = 0,tmp;
+    long double maxt = 0,tmp;
     int ruleNo;
     forAllRinS(ruleNo,state){
         tmp=TTL->get(ruleNo);
@@ -440,7 +440,7 @@ double model::TTLProb(int rule, StateType state, vector<double> lambdas)
         for(int i=1; i<=ruleNum; ++i)
         {
             bool existi=exist_bit(state,i);
-            double lambda =lambdas[i-1];
+            long double lambda =lambdas[i-1];
             // lambda =triggerFlowP(i,state,existi);// triggerFlowP(flowPara, i, flowRuleTable, state,bool_state);
             // lambdas[i-1]=lambda;
             if (i == rule){
@@ -473,8 +473,8 @@ double model::TTLProb(int rule, StateType state, vector<double> lambdas)
             for (int k =ceilstart; k<=ceil0; ++k)
             {
                 if ((TTL->get(it) > k * unit) && (it != rule)){
-                    double lambda=lambdas[it-1];
-                    double p = poissonNumber0(lambda, 0, (k - 1) * unit) * (1 - poissonNumber0(lambda, 0, unit));
+                    long double lambda=lambdas[it-1];
+                    long double p = poissonNumber0(lambda, 0, (k - 1) * unit) * (1 - poissonNumber0(lambda, 0, unit));
                     for(int j=1; j<=ruleNum; ++j)
                     {
                         if(j!=it){
@@ -501,7 +501,7 @@ double model::TTLProb(int rule, StateType state, vector<double> lambdas)
         for(int i=1; i<=ruleNum; ++i)
         {
             bool existi=exist_bit(state,i);
-            double lambda =lambdas[i-1];// triggerFlowP(flowPara, i, flowRuleTable, state,bool_state);
+            long double lambda =lambdas[i-1];// triggerFlowP(flowPara, i, flowRuleTable, state,bool_state);
             if (i == rule){
                 prob *=(1 - poissonNumber0(lambda, 0, unit)) * poissonNumber0(lambda, 0, ttlrule - unit);
                 //     cout<<"prob"<<prob<<endl;
@@ -534,7 +534,7 @@ double model::TTLProb(int rule, StateType state, vector<double> lambdas)
  ////////cout<<"size"<<mat.size()<<endl;
  
  StateProb2 newprob;//(oldprob.size(),0);
- double prob;
+ long double prob;
  #pragma omp parallel for
  for(StateType i=1;i<=stateNum;++i){
  StateType row=legalState[i];
@@ -581,14 +581,16 @@ double model::TTLProb(int rule, StateType state, vector<double> lambdas)
  end
  end
  end*/
-double unitComputation(floatCounter *flowPara,double delta,double limit, floatCounter *TTL){
+long double unitComputation(floatCounter *flowPara,long double delta,long double limit, floatCounter *TTL){
     int flowNum=flowPara->size();
-    double time = 0;
-    double sum = 1,prob,rm;
+    int ruleNum=TTL->size();
+        long double time = 0;
+    long double sum = 1,prob,rm;
     while (sum > 1 - limit){
         time+=delta;
         prob=1;
         for (int i=1;i<=flowNum;++i){
+            //cout<<flowPara->get(i);
             prob = prob * poissonNumber0(flowPara->get(i), 0, time);
         }
         sum = prob;
@@ -597,17 +599,28 @@ double unitComputation(floatCounter *flowPara,double delta,double limit, floatCo
         }
     }
     time+=delta;
-    int flag = 0;
+       int flag = 0;
     
     while(flag==0){
         time = time - delta;
-        flag = 1;
-        for (int i=1;i<=TTL->size();++i){
+                flag = 1;
+        for (int i=1;i<=ruleNum;++i){
             rm = TTL->get(i);
-            while (rm > time)
-                rm = rm - time;
-            if (rm <= time - limit)
+            int diff=rm/time;
+            if(diff*time>=rm)
+                rm=rm-(diff-1)*time;
+            else
+                rm-=diff*time;
+           
+            
+            /*while (rm > time){
+                rm -= time;
+                cout<<"while"<<rm<<endl;
+            }*/
+            if (rm <= (time - limit) && (rm> 0.00001)){
+                //cout<<rm<<"time="<<time<<"tim-limit"<<time-limit<<endl;
                 flag = 0;
+            }
         }
     }
     return time;

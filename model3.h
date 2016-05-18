@@ -7,9 +7,14 @@
 #define exist_bit( u, b) (u&(1<<(b-1)))
 #define exist_bit_c( u, b) u[b]
 #define MASK_EXIST 2
+enum CASETYPE{
+  CASE_COMMON,
+    CASE_SPECIAL
+};
+
 class model3:public model{
 public:
-    //Eigen::SparseVector<double> allnewStateProb;
+    //Eigen::SparseVector<long double> allnewStateProb;
     std::deque<std::deque<StateProb2>>allnewStateProb;
     StateType ttlPNum;
     StateType baseFullState;
@@ -17,8 +22,9 @@ public:
     StateType baseNum[2];
     TransProb ttlProbTable;
     StateType fullNum;
+    CASETYPE caseType;
     long total_time;
-    std::vector<double> triggerFlowPTable;
+    std::vector<long double> triggerFlowPTable;
     inline StateType stateNumCompute(int mSize,int ruleNum)
     {
         StateType stateNum = 1;
@@ -39,11 +45,11 @@ public:
         fullNum=(stateNum-baseFullState);
         return stateNum;
     }
-    double TTLStateProb( StateType state,std::vector<double> lambdas);
+    long double TTLStateProb( StateType state,std::vector<long double> lambdas);
     void init_triggerFlowP();
-    double TTLProb_reuse(int rule, StateType state);
-    double epsilon;
-    model3(floatCounter * flowPara, FlowRuleTable *flowRuleTable, floatCounter * TTL, int mSize, int initialStateNum, double interval, double unit, double delta):model(flowPara,flowRuleTable,TTL,mSize,initialStateNum,interval,unit,delta){
+    long double TTLProb_reuse(int rule, StateType state);
+    long double epsilon;
+    model3(floatCounter * flowPara, FlowRuleTable *flowRuleTable, floatCounter * TTL, int mSize, int initialStateNum, long double interval, long double unit, long double delta):model(flowPara,flowRuleTable,TTL,mSize,initialStateNum,interval,unit,delta){
         //StateType i,j=1;
         
     };
@@ -52,12 +58,13 @@ public:
     void transComputation();
     TransProb transComputation_ignore(int ignored_flow);
     void transComputation(int ignored_flow,TransProb & TransA);
-    double ruleEVT_reuse(int rule, StateType stateNum);
+    long double ruleEVT_reuse(int rule, StateType stateNum);
     void run();
     void init(){
         unit=unitComputation(flowPara, delta, limit, TTL);
         stateNum=0;
         total_time=0;
+        caseType=CASE_COMMON;
         std::cout<<"init model3"<<std::endl;
         fn = ceilM(interval, unit, delta);
         //#pragma omp parallel for
@@ -73,7 +80,7 @@ public:
             //stateNum++;
         }
         //epsilon=1/(2*stateNum);
-        epsilon=0;
+        epsilon=0.0000001;
         initFlowProb();
         // maxTrans=nChoosek(nRule, nRule/2);
         // maxTrans
