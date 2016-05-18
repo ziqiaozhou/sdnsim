@@ -214,7 +214,7 @@ long double model::ruleEVT(int rule, StateType list,bool full)
         {
             prob = 0;
             int maxv=ceilM(ttlrule, unit, delta);
-#pragma omp parallel for  reduction(+:prob)
+//#pragma omp parallel for  reduction(+:prob)
             for (int k = mSize; k<=maxv; ++k)
             {
                 long double p = 1;
@@ -436,7 +436,7 @@ long double model::TTLProb(int rule, StateType state, vector<long double> lambda
     total = 1;
     if (full){
         total = 0;
-#pragma omp parallel for reduction(*:prob)
+//#pragma omp parallel for reduction(*:prob)
         for(int i=1; i<=ruleNum; ++i)
         {
             bool existi=exist_bit(state,i);
@@ -469,7 +469,7 @@ long double model::TTLProb(int rule, StateType state, vector<long double> lambda
         {
             int ceil0=ceilM(maxt, unit, delta);
             int ceilstart=ceilM(ttlrule, unit, delta)+1;
-            #pragma omp parallel for reduction(+:prob)
+           // #pragma omp parallel for reduction(+:prob)
             for (int k =ceilstart; k<=ceil0; ++k)
             {
                 if ((TTL->get(it) > k * unit) && (it != rule)){
@@ -497,7 +497,7 @@ long double model::TTLProb(int rule, StateType state, vector<long double> lambda
         }
         ////cout<<"lambdas3"<<endl;
     }else{
-        #pragma omp parallel for reduction(*:prob)
+      //  #pragma omp parallel for reduction(*:prob)
         for(int i=1; i<=ruleNum; ++i)
         {
             bool existi=exist_bit(state,i);
