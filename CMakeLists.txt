@@ -3,7 +3,7 @@ SET(CMAKE_CXX_COMPILER "g++")
 #find_package(openmp)
 project (test)
 add_executable(test3 main.cpp autopara.cpp model3.cpp sdnsim.cpp attacker.cpp)
-add_executable(test input_main.cpp autopara.cpp model3.cpp sdnsim.cpp attacker.cpp)
+add_executable(autotest input_main.cpp autopara.cpp model3.cpp sdnsim.cpp attacker.cpp)
 
 #target_link_libraries(test3 openmp)
 #target_include_directories(test3 ./)
