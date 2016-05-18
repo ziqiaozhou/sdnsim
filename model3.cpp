@@ -208,8 +208,8 @@ void model3::transComputation(int ignored_flow,TransProb & TransA)
         }
         
     }
-    Trans.prune(0,epsilon);
-    TransA.prune(0,epsilon);
+    Trans.prune(0,0);
+    TransA.prune(0,0);
     //return TransA;
 }
 
@@ -667,6 +667,7 @@ void model::initFlowProb(){
     for (int i = 1; i<=nFlow; ++i)
     {
         prob *= poissonNumber0(flowPara->get(i), (int)0,unit);
+        cout<<"prob"<<prob<<endl;
     }
     
     ////////cout<<"hello"<<endl;

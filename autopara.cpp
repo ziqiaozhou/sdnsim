@@ -21,7 +21,7 @@
 #include <string>
 # define TTLRange 10
 # define beta 0.5
-
+#define entropy(pr) (((pr<=0)||(pr>=1))?0:(-pr*log(pr)-(1-pr)*log(1-pr)))
 using namespace std;
 struct RulePrioSorter{
     bool operator ()(const array<int,2> &a, const array<int,2> &b) {
@@ -229,8 +229,8 @@ void Automatic::save(string path){
     myfile<<endl<<"------target--------\n";
     myfile<<target<<endl;
     myfile<<"------result--------\n";
-    for(std::set<set<int>>::iterator oneset=attackFlow.begin(); oneset!=attackFlow.end(); ++oneset){
-        for(std::set<int>::iterator it=oneset->begin(); it!=oneset->end(); ++it){
+    for(std::set<vector<int>>::iterator oneset=attackFlow.begin(); oneset!=attackFlow.end(); ++oneset){
+        for(std::vector<int>::const_iterator it=oneset->begin(); it!=oneset->end(); ++it){
             myfile<<*it<<"\t";
         }
         myfile<<endl;
@@ -259,8 +259,8 @@ void Automatic::save_tmp(string path){
     myfile<<endl<<"------target--------\n";
     myfile<<target<<endl;
     myfile<<"------result--------\n";
-    for(std::set<set<int>>::iterator oneset=attackFlow.begin(); oneset!=attackFlow.end(); ++oneset){
-        for(std::set<int>::iterator it=oneset->begin(); it!=oneset->end(); ++it){
+    for(std::set<vector<int>>::iterator oneset=attackFlow.begin(); oneset!=attackFlow.end(); ++oneset){
+        for(std::vector<int>::const_iterator it=oneset->begin(); it!=oneset->end(); ++it){
             myfile<<*it<<"\t";
         }
         myfile<<endl;
@@ -287,8 +287,8 @@ void Automatic::save(string path,int& counter){
     myfile<<endl<<"------target--------\n";
     myfile<<target<<endl;
     myfile<<"------result--------\n";
-    for(std::set<set<int>>::iterator oneset=attackFlow.begin(); oneset!=attackFlow.end(); ++oneset){
-        for(std::set<int>::iterator it=oneset->begin(); it!=oneset->end(); ++it){
+    for(std::set<vector<int>>::iterator oneset=attackFlow.begin(); oneset!=attackFlow.end(); ++oneset){
+        for(std::vector<int>::const_iterator it=oneset->begin(); it!=oneset->end(); ++it){
             myfile<<*it<<"\t";
         }
         myfile<<endl;
@@ -298,6 +298,67 @@ void Automatic::save(string path,int& counter){
     myfile<<IG.transpose()<<endl;
     myfile.close();
 }
+
+void Automatic::future_run(int qNum0,int flowInterest,StateType initialStateNum,set<vector<int>>&attackFlow, MatD &PrXQ,VecD &IG,bool rerun){
+    init();
+    unit=unitComputation(flowPara, delta, limit, TTL);
+    ////cout<<"out unit is"<<unit<<endl;
+    ////cout<<"run1";
+    long double pr = pow((1 - flowProb[flowInterest]), fn);
+    /* for (int i=0;i<nFlow+1; ++i) {
+     //cout<<"flowprob="<<flowProb[i]<<endl;
+     }*/
+    long double entropyQ = entropy(pr);
+    long double maxm = 0;
+    qNum=qNum0;
+    
+    int flowNum=nFlow;
+    queryNum=((qNum > 0) && (flowNum >= qNum))?(factorial(flowNum,flowNum - qNum)):0;
+    
+    int valueNum = 1<<qNum;
+    VecD conditionalEntropyQ(queryNum);//=(long double *)zmalloc(sizeof(long double)*queryNum);
+    conditionalEntropyQ.setZero();
+    PrXQ.resize(queryNum, valueNum);
+    PrXQ.setZero();
+    IG.resize(queryNum);
+    IG.setOnes();
+    
+    future_conditionalEntropyComputeM3(flowInterest, initialStateNum,conditionalEntropyQ,PrXQ,stateProbA,rerun);
+    IG=entropyQ*IG-conditionalEntropyQ;
+    //IG.maxCoeff(&query,&tmp);
+    for (int i = 0;i<queryNum;++i){
+        if ( IG(i) > maxm  ){
+            maxm = IG(i);
+            attackFlow.clear();
+            attackFlow.insert(bin2SetAttack(i, flowNum, qNum));
+        }
+        if(abs(IG(i) - maxm) <0.0000000001){
+            bool hastarget=false;
+            vector<int> attackFlowMid = bin2SetAttack(i, flowNum, qNum);
+            for(int j=0;j<attackFlowMid.size();j++){
+                if(attackFlowMid[j]==(flowInterest)){
+                    attackFlow.clear();
+                    hastarget=true;
+                    attackFlow.insert(attackFlowMid);
+                    maxm = IG(i);
+                    break;
+                }
+            }
+            if (!hastarget) {
+                continue;
+            }
+            attackFlow.insert(attackFlowMid);
+        }
+    }
+    // //cout<<IG<<endl;
+    ////cout<<Trans<<endl;
+    /*for(std::set<int>::iterator it=attackFlow.begin(); it!=attackFlow.end(); ++it){
+     //cout<<"choose"<<*it<<endl;
+     }
+     //cout<<"choose end"<<endl;*/
+}
+
+
 
 int Automatic::generate(int flowNum, int ruleNum, long double alpha, float TTLMax0,double interval0,int runTimes){
     //vector<> resultV = zeros(1,12);
@@ -333,8 +394,7 @@ int Automatic::generate(int flowNum, int ruleNum, long double alpha, float TTLMa
         target=flowInterest;
         attackFlow.empty();
         updated=true;
-        
-        run(qNum,target,initialStateNum,attackFlow,PrXQ,IG);
+        future_run(qNum,target,initialStateNum,attackFlow,PrXQ,IG,false);
        // //cout<<"FP:"<<flowProb<<endl;
        // //cout<<"Trans:"<<Trans<<endl;
         bool record_case=false;
@@ -346,13 +406,14 @@ int Automatic::generate(int flowNum, int ruleNum, long double alpha, float TTLMa
             default:
             {
                 
-                for(std::set<set<int>>::iterator oneset=attackFlow.begin(); oneset!=attackFlow.end(); ++oneset){
-                    if(oneset->count(target)>0){
-                        record_case=false;
-                        break;
-                    }
-                    for(std::set<int>::iterator it=oneset->begin(); it!=oneset->end(); ++it){
-                        if (PrXQ((*it)-1,0)>0.5 && PrXQ((*it)-1,1)<0.5) {
+                for(std::set<vector<int>>::iterator oneset=attackFlow.begin(); oneset!=attackFlow.end(); ++oneset){
+                    
+                    for(vector<int>::const_iterator it=oneset->begin();it!=oneset->end();++it){
+                        if((*it)==target){
+                            record_case=false;
+                            break;
+                        }
+                        if (PrXQ(*it-1,0)>0.5 && PrXQ((*it)-1,1)<0.5) {
                             record_case=true;
                             choose=*it;
                             break;
@@ -360,12 +421,37 @@ int Automatic::generate(int flowNum, int ruleNum, long double alpha, float TTLMa
                     }
                 }
                 if(record_case)
-                   { save("../data/");
-                    i = i + 1; }
+                   {
+                       save("../data/");
+                       MatD PrXQ2;
+                       VecD IG2;
+                       set<vector<int>>attackFlow2;
+                       attackFlow2.clear();
+                       string path="../data/";
+                       ++qNum;
+                       future_run(qNum,target,initialStateNum,attackFlow2,PrXQ2,IG2,true);
+                       --qNum;
+                       ofstream myfile;
+                       myfile.open(path+"/"+to_string(nFlow)+"_"+to_string(nRule)+"para"+label+"_"+to_string(times)+".txt",std::ios_base::app);
+                       myfile<<"------result2--------\n";
+                       for(std::set<vector<int>>::iterator oneset=attackFlow2.begin(); oneset!=attackFlow2.end(); ++oneset){
+                           for(std::vector<int>::const_iterator it=oneset->begin(); it!=oneset->end(); ++it){
+                               myfile<<*it<<"\t";
+                           }
+                           myfile<<endl;
+                       }
+                       myfile<<"------details2--------\n";
+                       myfile<<PrXQ2.transpose()<<endl;
+                       myfile<<IG2.transpose()<<endl;
+                       myfile.close();
+
+                    i = i + 1;
+                   }
                 else
                 {
                     save_tmp("../tmp/");
-                    i = i + 1;}
+                    i = i + 1;
+                }
             }
                 break;
         }

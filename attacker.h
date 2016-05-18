@@ -21,12 +21,14 @@ public:
         //StateType i,j=1;
         updated=true;
     };
-    void run(int qNum0,int flowInterest,StateType initialStateNum,std::set<std::set<int>>&attackFlow, MatD &PrXQ,VecD &IG);
-    long double flowProbCompute3M(StateProb2& stateProb0,std::set<int> &queryInterest,int queryResult);
+    void run(int qNum0,int flowInterest,StateType initialStateNum,std::set<std::vector<int>>&attackFlow, MatD &PrXQ,VecD &IG);
+     long double flowProbCompute3M(StateProb2& stateProb0,std::vector<int> queryInterest,int queryResult);
     void conditionalEntropyComputeM3(int flowInterest,int initialStateNum,VecD&conditionalEntropyQ,MatD&PrXQ);
+    void future_conditionalEntropyComputeM3(int flowInterest,int initialStateNum,VecD &conditionalEntropyQ,MatD&PrXQ,StateProb2 &stateProbA,bool);
+     
     // void run(int qNum0,int flowInterest,StateType initialStateNum,std::set<int>&attackFlow, MatD&PrXQ,VecD&IG);
     
 };
 StateType num2StateAttack(int num, int flowNum,int qNum);
-std::set<int> bin2SetAttack(int num, int flowNum,int qNum);
+std::vector<int> bin2SetAttack(int num, int flowNum,int qNum);
 #endif

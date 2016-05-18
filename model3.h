@@ -80,7 +80,7 @@ public:
             //stateNum++;
         }
         //epsilon=1/(2*stateNum);
-        epsilon=0.0000001;
+        epsilon=0.000000001;
         initFlowProb();
         // maxTrans=nChoosek(nRule, nRule/2);
         // maxTrans

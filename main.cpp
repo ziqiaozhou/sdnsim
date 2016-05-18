@@ -26,27 +26,36 @@ int main()
     StateProb2 test(4);
     //cout<<test;
     long double pr=0.5;
+       vector<int> state=bin2SetAttack(11, 4, 3);
+    for(int i=0;i<state.size();i++){
+        cout<<state[i]<<" ";
+    }
+    cout<<endl;
+     state=bin2SetAttack(14, 4, 3);
+    for(int i=0;i<state.size();i++){
+        cout<<state[i]<<" ";
+    }
+    cout<<endl;
     //cout<<"factory"<<factorial(13,12)<<endl;
     // //cout<<"entropy="<<(-pr*log(pr)-(1-pr)*log(1-pr))<<endl;
     //////cout << "Machine Epsilon is: " << numeric_limits<long double>::epsilon() << endl;
     //////cout<<nChoosek(10, 3)<<endl;
     //////cout<<poissonNumber(0.5,0,0.025)<<endl;
     //////cout<<ceilM(1,0.125,0.01)<<endl;
-    int flowNum=4,ruleNum=3;
+    int flowNum=3,ruleNum=3;
     int mSize=2;
     StateType initialStateNum=0;
-    long double interval=1.5;
+    long double interval=2;
     long double limit=0.001;
     long double delta=0.001;
-    int target=3;
+    int target=1;
     int qnum=1;
     FlowRuleTable table(flowNum,ruleNum);//flowNUm,ruleNUm
     floatCounter flowPara(flowNum);
     
-    table<<0,1,2,
-    0,1,2,
-    3,1,2,
-    3,1,0;
+    table<<2, 1, 0,
+    0, 1, 0,
+    0, 0, 1;
     
     
     //table.set(1,1,3);
@@ -62,17 +71,17 @@ int main()
     //int tmp;
     //int rule;
     //  //cout<<table.row(1).maxCoeff(&tmp,&rule)<<"rule="<<rule;
-    flowPara[1]=0.609;
-    flowPara[2]=0.636;
-    flowPara[3]=0.288;
-    flowPara[4]=0.222;
+    flowPara[1]=0.3;
+    flowPara[2]=0.8;
+    flowPara[3]=0.5;
+   // flowPara[4]=0.003;
     //flowPara[4]=0.4;
     //flowPara[5]=0.1;
     //flowPara[4]=0.2;
     floatCounter TTL(ruleNum);
-    TTL[1]=0.3;
-    TTL[2]=0.1;
-    TTL[3]=0.7;
+    TTL[1]=1;
+    TTL[2]=1;
+    TTL[3]=1;
     //TTL[4]=0.5;
     // for(int i=4;i<=ruleNum;++i){
     //     table.set(i,i,1);
@@ -136,7 +145,7 @@ int main()
     //memset(c,1,10);
     StateType l=1023;
 #endif
-    set<set<int>>attackFlow;
+    set<vector<int>>attackFlow;
     MatD PrXQ;
     VecD IG;
 #if 1
@@ -144,13 +153,12 @@ int main()
     ////cout<<"attack"<<endl;
     ////cout<<"run1"<<endl;
     attacker.run(qnum,target,initialStateNum,attackFlow,PrXQ,IG);
-    ////cout<<IG<<endl;
-    ////cout<<PrXQ<<endl;
-    /*  for(int i=0;i<PrXQ->size();++i){
-     for(int j=0;j<(*PrXQ)[i].size();++j){
-     //cout<<i<<","<<j<<"="<<(*PrXQ)[i][j]<<endl;
-     }
-     }*/
+    cout<<IG<<endl;
+    cout<<PrXQ<<endl;
+    cout<<attacker.flowProb<<endl;
+    cout<<attacker.unit<<endl;
+    cout<<attacker.Trans;
+    cout<<attacker.stateProb;
     StateProb2 stateprob=attacker.getStateProb();
     //cout<<attacker.get_nrule()<<endl;
     // //cout<<factorial(13)<<endl;;
