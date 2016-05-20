@@ -187,6 +187,13 @@ void Attacker::run(int qNum0,int flowInterest,StateType initialStateNum,set<vect
     IG=entropyQ*IG-conditionalEntropyQ;
     //IG.maxCoeff(&query,&tmp);
     for (int i = 0;i<queryNum;++i){
+        vector<int> attackFlowMid = bin2SetAttack(i, flowNum, qNum);
+        for(int j=0;j<attackFlowMid.size();j++){
+                if(attackFlowMid[j]==(flowInterest)){
+                    IG(i)=0;
+                    break;
+                }
+        }
         if ( IG(i) > maxm  ){
             maxm = IG(i);
             attackFlow.clear();
@@ -194,7 +201,7 @@ void Attacker::run(int qNum0,int flowInterest,StateType initialStateNum,set<vect
         }
         if(abs(IG(i) - maxm) <0.0000000001){
             bool hastarget=false;
-            vector<int> attackFlowMid = bin2SetAttack(i, flowNum, qNum);
+            
             for(int j=0;j<attackFlowMid.size();j++){
                 if(attackFlowMid[j]==(flowInterest)){
                     attackFlow.clear();
